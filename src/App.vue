@@ -1,82 +1,78 @@
 
 <script setup>
-import productoCard from "./components/productoCard.vue"
-// para despues 
-// import { ref, onMounted } from "vue"
-// const productos = ref([])
 
+import { ref, computed, onMounted } from "vue"
+import ProductoCard from "./components/productoCard.vue"
 
+const cargando = ref(false)
+const error = ref("")
+const busqueda = ref("")
+const productos = ref([])
 
-const productos = [
-  {
-    id: 1,
-    nombre: "Remera básica blanca Unisex",
-    precio: 15000,
-    categoria: "Remeras",
-    imagen: "",
-    descripcion: "Remera básica de algodón color blanco."
-  },
-  {
-    id: 2,
-    nombre: "Buzo oversize negro 1890",
-    precio: 28000,
-    categoria: "Buzos",
-    imagen: "",
-    descripcion: "Buzo oversize de algodón color negro."
-  },
-  {
-    id: 3,
-    nombre: "Short Unisex",
-    precio: 35000,
-    categoria: "Short",
-    imagen: "",
-    descripcion: "Short de algodón color azul."
-  },
-  {
-    id: 4,
-    nombre: "Campera de jean",
-    precio: 42000,
-    categoria: "Camperas",
-    imagen: "",
-    descripcion: "Campera de jean clásica."
-  },
-  {
-    id: 5,
-    nombre: "Pantalón cargo beige",
-    precio: 32000,
-    categoria: "Pantalones",
-    imagen: "",
-    descripcion: "Pantalón cargo de estilo urbano."
-  },
-  {
-    id: 6,
-    nombre: "Remera estama Somos",
-    precio: 18000,
-    categoria: "Remeras",
-    imagen: "",
-    descripcion: "Remera de algodón con estampa."
+const URL = "https://dummyjson.com/products"
+
+async function cargarProductos() {
+  cargando.value = true
+  error.value = ""
+
+  try {
+    const response = await fetch(URL)
+    if (!response.ok) {
+      throw new Error("No se pudieron cargar los productos.")
+    }
+    const data = await response.json()
+    productos.value = data.products.map(producto => ({
+      id: producto.id,
+      nombre: producto.title,
+      precio: producto.price,
+      categoria: producto.category,
+      imagen: producto.thumbnail,
+      descripcion: producto.description
+    }))
+  } catch (err) {
+    error.value = err.message
+  } finally {
+    cargando.value = false
   }
-]
+}
+ 
+onMounted(() => {cargarProductos()})
 
-// async function cargarProductos() {
-//const URL = "url"
-//const response = await fetch(URL)
-//if (!response.ok) {
-//     throw new Error("No se pudieron cargar los productos.")
-//   }
-//productos.value = await response.json()
-// }
+const productosFiltrados = computed(() => {
+  return productos.filter(producto => {
+    return (
+      producto.nombre.toLowerCase().includes(busqueda.value.toLowerCase()) ||
+      producto.categoria.toLowerCase().includes(busqueda.value.toLowerCase())
+    )
+  })
+})
 
-// onMounted(() => {cargarProductos()})
 
 </script>
 <template>
   <div>
-    <productoCard
-      v-for="producto in productos"
-      :key="producto.id"
-      :producto="producto"
-    />
+    <p v-if="cargando">Cargando productos... </p>
+    <p v-else-if="error">
+     {{ error }}
+    </p>
+    
+    <p v-else-if="productos.length === 0">
+      No hay productos disponibles.
+    </p>
+
+    <div v-else>
+
+  <input
+  v-model="busqueda"
+  type="text"
+  placeholder="Buscar producto..."
+  />
+  <ProductoCard
+        v-for="producto in productosFiltrados"
+        :key="producto.id"
+        :producto="producto"
+      />
+  </div>
   </div>
 </template>
 <style scoped></style>
