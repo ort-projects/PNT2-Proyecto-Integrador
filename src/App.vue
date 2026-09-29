@@ -39,7 +39,7 @@ async function cargarProductos() {
 onMounted(() => {cargarProductos()})
 
 const productosFiltrados = computed(() => {
-  return productos.filter(producto => {
+  return productos.value.filter(producto => {
     return (
       producto.nombre.toLowerCase().includes(busqueda.value.toLowerCase()) ||
       producto.categoria.toLowerCase().includes(busqueda.value.toLowerCase())
@@ -51,28 +51,38 @@ const productosFiltrados = computed(() => {
 </script>
 <template>
   <div>
-    <p v-if="cargando">Cargando productos... </p>
-    <p v-else-if="error">
-     {{ error }}
-    </p>
-    
-    <p v-else-if="productos.length === 0">
-      No hay productos disponibles.
+    <p v-if="cargando">
+      Cargando productos...
     </p>
 
+    <div v-else-if="error">
+      <p>{{ error }}</p>
+
+      <button @click="cargarProductos">
+        Reintentar
+      </button>
+    </div>
+    
     <div v-else>
 
-  <input
-  v-model="busqueda"
-  type="text"
-  placeholder="Buscar producto..."
-  />
-  <ProductoCard
+      <input
+        v-model="busqueda"
+        type="text"
+        placeholder="Buscar producto..."
+      />
+
+      <p v-if="productosFiltrados.length === 0">
+        No se encontraron productos.
+      </p>
+
+      <ProductoCard
         v-for="producto in productosFiltrados"
         :key="producto.id"
         :producto="producto"
       />
-  </div>
+
+    </div>
+
   </div>
 </template>
 <style scoped></style>
