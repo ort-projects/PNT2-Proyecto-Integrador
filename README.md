@@ -1,38 +1,61 @@
-# PNT2-Proyecto-Integrador
+# Nombre del proyecto
+Desarrollo pagina web ecommerce . Indumentaria. ModArg
 
-This template should help get you started developing with Vue 3 in Vite.
+## Integrantes
+Gabriel Teruel
+Gonzalo Cabo
+Dana Mehle
 
-## Recommended IDE Setup
+# E-commerce de Indumentaria
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+Proyecto integrador desarrollado con Vue 3 como parte de la cursada.
 
-## Recommended Browser Setup
+## Descripción
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+Aplicación web de e-commerce orientada a la visualización y búsqueda de productos de indumentaria.
 
-## Customize configuration
+El proyecto implementa un catálogo de productos obtenido desde una API externa, utilizando Vue 3 y sus principales herramientas de reactividad y renderizado.
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+## Tecnologías utilizadas
 
-## Project Setup
+- Vue 3
+- Vite
+- JavaScript
+- HTML
+- CSS
+- Fetch API
+- Git
+- GitHub
 
-```sh
-npm install
-```
+## Funcionalidades
 
-### Compile and Hot-Reload for Development
+Actualmente:
 
-```sh
-npm run dev
-```
+- Mostrar un catálogo de productos.
+- Obtener productos desde una API mediante `fetch`.
+- Mostrar imágenes, nombre, precio, categoría y descripción.
+- Mostrar un estado de carga mientras se obtienen los productos.
+- Mostrar un mensaje cuando ocurre un error.
+- Reintentar la carga de productos.
+- Buscar productos por nombre.
+- Buscar productos por categoría.
+- Mostrar un mensaje cuando no se encuentran resultados.
+- Mostrar un estado vacío cuando no hay productos.
 
-### Compile and Minify for Production
+## API
 
-```sh
-npm run build
-```
+Para el desarrollo inicial se utiliza una API externa de prueba:
+
+DummyJSON - Products API
+
+La API será reemplazada posteriormente por la API desarrollada para el proyecto.
+
+## Estructura del proyecto
+
+```text
+src/
+├── components/
+│   └── ProductoCard.vue
+│
+├── App.vue
+└── main.js
