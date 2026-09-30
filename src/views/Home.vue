@@ -49,7 +49,20 @@ const productosFiltrados = computed(() => {
 
 </script>
 <template>
+
   <div>
+    <h1 class="title">
+      Indumentaria Urbana ModArg
+    </h1>
+
+    <p class="subtitle">
+      Catálogo de productos
+    </p>
+
+    <button class="button is-primary">
+      Ver productos
+    </button>
+    
     <p v-if="cargando">
       Cargando productos...
     </p>
