@@ -4,7 +4,7 @@ import ProductDetail from '../views/ProductDetail.vue'
 
 
 const routes = [
-  { path: '/', component: Home },
+  { path: '/', component: Home, meta:{layout:"MainLayout"} },
   { path: '/product/:id', component: ProductDetail, name:"product" }
 ]
 
