@@ -1,7 +1,8 @@
 <script setup>
 
 import { ref, computed, onMounted } from "vue"
-import ProductoCard from "../components/productoCard.vue"
+
+import productoList from "../components/productoList.vue"
 
 const cargando = ref(false)
 const error = ref("")
@@ -87,11 +88,7 @@ const productosFiltrados = computed(() => {
         No se encontraron productos.
       </p>
 
-      <ProductoCard
-        v-for="producto in productosFiltrados"
-        :key="producto.id"
-        :producto="producto"
-      />
+      <productoList :productos="productosFiltrados"/>
 
     </div>
 
