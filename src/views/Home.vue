@@ -50,50 +50,58 @@ const productosFiltrados = computed(() => {
 
 </script>
 <template>
+    <section class="hero is-light">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title">Indumentaria Urbana ModArg</h1>
+      <p class="subtitle">Encontrá tu look</p>
 
-  <div>
-    <h1 class="title">
-      Indumentaria Urbana ModArg
-    </h1>
+      <div class="field">
+        <label class="label" for="busqueda">Buscar productos</label>
+        <div class="control">
+          <input
+            id="busqueda"
+            v-model="busqueda"
+            class="input"
+            type="search"
+            placeholder="Buscar por nombre o categoría..."
+          />
+        </div>
+      </div>
 
-    <p class="subtitle">
-      Catálogo de productos
-    </p>
-
-    <button class="button is-primary">
+    <a class="button is-primary is-outlined" href="#catalogo">
       Ver productos
-    </button>
-    
-    <p v-if="cargando">
-      Cargando productos...
-    </p>
+    </a>
+    </div>
+  </div>
+</section>
+<section id="catalogo" class="section">
+  <div class="container">
+    <h2 class="title is-3">Catálogo de productos</h2>
 
-    <div v-else-if="error">
+    <p v-if="cargando">Cargando productos...</p>
+
+    <div v-else-if="error" class="notification is-danger is-light">
       <p>{{ error }}</p>
-
-      <button @click="cargarProductos">
+      <button class="button mt-3" @click="cargarProductos">
         Reintentar
       </button>
     </div>
     
-    <div v-else>
+    <p v-else-if="productos.length === 0">
+      Todavía no hay productos para mostrar.
+    </p>
 
-      <input
-        v-model="busqueda"
-        type="text"
-        placeholder="Buscar producto..."
-      />
-
-      <p v-if="productosFiltrados.length === 0">
-        No se encontraron productos.
+    <p v-else-if="productosFiltrados.length === 0">
+      No se encontraron productos con esa búsqueda.
       </p>
 
-      <productoList :productos="productosFiltrados"/>
-
-    </div>
-
+    <productoList
+      v-else
+      :productos="productosFiltrados"
+    />
   </div>
+</section>
 </template>
-
 
 <style scoped></style>
