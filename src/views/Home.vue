@@ -70,7 +70,7 @@ const productosFiltrados = computed(() => {
       </div>
 
     <a class="button is-primary is-outlined" href="#catalogo">
-      Ver productos
+     Ver productos
     </a>
     </div>
   </div>
@@ -87,14 +87,14 @@ const productosFiltrados = computed(() => {
         Reintentar
       </button>
     </div>
-    
+
     <p v-else-if="productos.length === 0">
       Todavía no hay productos para mostrar.
     </p>
 
     <p v-else-if="productosFiltrados.length === 0">
       No se encontraron productos con esa búsqueda.
-      </p>
+    </p>
 
     <productoList
       v-else
