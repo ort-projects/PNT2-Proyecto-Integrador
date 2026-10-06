@@ -11,16 +11,16 @@ const props = defineProps(["producto"])
       <div class="card-image">
         <figure class="image is-4by3">
           <img
-            :src="producto.imagen"
-            :alt="producto.nombre"
+            :src="producto.thumbnail"
+            :alt="producto.title"
           />
         </figure>
       </div>
 
       <div class="card-content">
-        <p class="title is-5">{{ producto.nombre }}</p>
-        <p class="subtitle is-6">{{ producto.categoria }}</p>
-        <p class="product-price">${{ producto.precio }}</p>
+        <p class="title is-5">{{ producto.title }}</p>
+        <p class="subtitle is-6">{{ producto.category }}</p>
+        <p class="product-price">${{ producto.price }}</p>
       </div>
     </div>
   </RouterLink>

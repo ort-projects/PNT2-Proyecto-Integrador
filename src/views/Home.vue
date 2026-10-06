@@ -20,15 +20,18 @@ async function cargarProductos() {
     if (!response.ok) {
       throw new Error("No se pudieron cargar los productos.")
     }
-    const data = await response.json()
-    productos.value = data.products.map(producto => ({
+    const data = await response.json() // vamos a sacar el mapeo 
+    productos.value = data.products
+
+    /*.map(producto => ({
       id: producto.id,
       nombre: producto.title,
       precio: producto.price,
       categoria: producto.category,
       imagen: producto.thumbnail,
       descripcion: producto.description
-    }))
+    }))*/
+
   } catch (err) {
     error.value = err.message
   } finally {
@@ -41,8 +44,8 @@ onMounted(() => {cargarProductos()})
 const productosFiltrados = computed(() => {
   return productos.value.filter(producto => {
     return (
-      producto.nombre.toLowerCase().includes(busqueda.value.toLowerCase()) ||
-      producto.categoria.toLowerCase().includes(busqueda.value.toLowerCase())
+      producto.title.toLowerCase().includes(busqueda.value.toLowerCase()) ||
+      producto.category.toLowerCase().includes(busqueda.value.toLowerCase())
     )
   })
 })
