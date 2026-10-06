@@ -1,25 +1,34 @@
 <script setup>
-import { ref, computed } from "vue"
+import { ref, onMounted } from "vue"
 import { useRoute } from "vue-router"
 
 const route = useRoute()
-const URL = `https://dummyjson.com/product/${route.params.id}`
-const product = ref({})
+const product = ref(null)
 const cargando = ref(false)
 const error = ref("")
-const quantity = ref(1)
 
-async function productDetail() {
+async function cargarProducto() {
   cargando.value = true
   error.value = ""
 
   try {
+    const URL = `https://dummyjson.com/products/${route.params.id}`
     const response = await fetch(URL)
+
     if (!response.ok) {
-      throw new Error("No se pudieron cargar los productos.")
+      throw new Error("No se pudo cargar el producto.")
     }
+
     const data = await response.json()
-    product.value = data
+
+    product.value = {
+      id: data.id,
+      nombre: data.title,
+      precio: data.price,
+      categoria: data.category,
+      imagen: data.thumbnail,
+      descripcion: data.description,
+    }
   } catch (err) {
     error.value = err.message
   } finally {
@@ -27,78 +36,64 @@ async function productDetail() {
   }
 }
 
-productDetail();
-
+onMounted(cargarProducto)
 </script>
+
 
 <template>
   <section class="section">
     <div class="container">
-      <!-- Estado de Carga -->
       <div v-if="cargando" class="has-text-centered my-6">
-        <button class="button is-loading is-large is-ghost">Cargando...</button>
+        <button class="button is-loading is-large is-ghost">
+          Cargando...
+        </button>
       </div>
 
-      <!-- Estado de Error o No Encontrado -->
-      <div v-else-if="!product" class="notification is-danger is-light has-text-centered">
-        <p class="title is-5">¡Ups! El producto no se encuentra disponible.</p>
-        <router-link to="/" class="button is-danger is-outlined mt-3">Volver a la tienda</router-link>
+      <div
+        v-else-if="error"
+        class="notification is-danger is-light has-text-centered"
+      >
+        <p class="title is-5">{{ error }}</p>
+        <RouterLink to="/" class="button is-danger is-outlined mt-3">
+          Volver a la tienda
+        </RouterLink>
       </div>
 
-      <!-- Contenido del Producto -->
+      <div v-else-if="!product" class="notification is-warning is-light">
+        El producto no está disponible.
+        <RouterLink to="/" class="button mt-3">
+          Volver a la tienda
+        </RouterLink>
+      </div>
+
       <div v-else class="columns is-vcentered">
-        <!-- Columna de Imágenes -->
         <div class="column is-6">
           <div class="box p-0 overflow-hidden">
             <figure class="image is-4by3">
-              <img :src="product.thumbnail" :alt="product.title" />
+              <img :src="product.imagen" :alt="product.nombre" />
             </figure>
           </div>
         </div>
 
-        <!-- Columna de Información -->
         <div class="column is-5 is-offset-1">
           <nav class="breadcrumb is-small" aria-label="breadcrumbs">
             <ul>
-              <li><router-link to="/">Inicio</router-link></li>
+              <li><RouterLink to="/">Inicio</RouterLink></li>
               <li>Productos</li>
-              <li class="is-active"><a href="#" aria-current="page">{{ product.category || 'Categoría' }}</a></li>
+              <li class="is-active">
+                <span aria-current="page">{{ product.categoria }}</span>
+              </li>
             </ul>
           </nav>
 
-          <h1 class="title is-2 mb-2">{{ product.name }}</h1>
+          <h1 class="title is-2 mb-2">{{ product.nombre }}</h1>
+
           <p class="subtitle is-4 has-text-primary has-text-weight-bold mb-4">
-            ${{ product.price }}
+            ${{ product.precio }}
           </p>
 
-          <div class="content mb-5">
-            <p>{{ product.description }}</p>
-          </div>
-
-          <hr />
-
-          <!-- Opciones de Compra -->
-          <div class="field is-horizontal align-items-center mb-5">
-            <div class="field-label is-normal mr-3">
-              <label class="label">Cantidad:</label>
-            </div>
-            <div class="field-body">
-              <div class="field">
-                <div class="control">
-                  <div class="select">
-                    <select v-model="quantity">
-                      <option v-for="n in 5" :key="n" :value="n">{{ n }}</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="buttons">
-            <button @click="addToCart" class="button is-primary is-medium is-fullwidth">
-              <strong>Añadir al carrito</strong>
-            </button>
+          <div class="content">
+            <p>{{ product.descripcion }}</p>
           </div>
         </div>
       </div>
@@ -109,9 +104,18 @@ productDetail();
 <style scoped>
 .overflow-hidden {
   overflow: hidden;
-  border-radius: 6px;
+  border-radius: 8px;
 }
-.align-items-center {
-  align-items: center;
+
+.image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media screen and (max-width: 768px) {
+  .column.is-offset-1 {
+    margin-left: 0;
+  }
 }
 </style>
