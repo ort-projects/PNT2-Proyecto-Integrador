@@ -1,16 +1,11 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { Bar } from 'vue-chartjs'
-import {
-  BarElement,
-  CategoryScale,
-  Chart as ChartJS,
-  Legend,
-  LinearScale,
-  Tooltip,
-} from 'chart.js'
+import { Line } from 'vue-chartjs'
+import {CategoryScale,Chart as ChartJS,Filler,Legend,LineElement,
+  LinearScale,PointElement,Tooltip,} from 'chart.js'
 
-ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend)
+ChartJS.register(LineElement,PointElement,CategoryScale,LinearScale,
+  Tooltip,Legend,Filler,)
 
 const anioSeleccionado = new Date().getFullYear()
 
@@ -61,18 +56,18 @@ const datosGrafico = computed(() => ({
   labels: nombresMeses,
   datasets: [
     {
-      label: 'Ventas (pedidos)',
+      label: 'Ventas',
       data: resumenMensual.value.map((mes) => mes.ventas),
-      backgroundColor: '#dce7bf',
-      borderColor: '#a8b987',
-      borderWidth: 1,
-    },
-    {
-      label: 'Unidades vendidas',
-      data: resumenMensual.value.map((mes) => mes.unidades),
-      backgroundColor: '#c6def0',
-      borderColor: '#92b6cf',
-      borderWidth: 1,
+      borderColor: '#718453',
+      backgroundColor: 'rgba(168, 185, 135, 0.22)',
+      borderWidth: 2.5,
+      pointRadius: 3,
+      pointHoverRadius: 7,
+      pointBackgroundColor: '#718453',
+      pointBorderColor: '#faf7ef',
+      pointBorderWidth: 2,
+      tension: 0.4,
+      fill: true,
     },
   ],
 }))
@@ -80,11 +75,23 @@ const datosGrafico = computed(() => ({
 const opcionesGrafico = {
   responsive: true,
   maintainAspectRatio: false,
+  interaction: {
+    mode: 'nearest',
+    intersect: false,
+  },
   plugins: {
-    legend: { position: 'bottom' },
-    tooltip: { mode: 'index', intersect: false },
+    legend: { display: false },
+    tooltip: {
+      enabled: true,
+      callbacks: {
+        label: (context) => `${context.parsed.y} ventas`,
+      },
+    },
   },
   scales: {
+    x: {
+      grid: { display: false },
+    },
     y: {
       beginAtZero: true,
       ticks: { precision: 0 },
@@ -102,7 +109,6 @@ const opcionesGrafico = {
           <h1 class="title is-2">Resumen de ventas</h1>
           <p class="subtitle">Actividad mensual de {{ anioSeleccionado }}</p>
         </div>
-        <span class="tag demo-tag">Datos de ejemplo</span>
       </div>
 
       <div class="columns is-variable is-4 summary-cards">
@@ -126,14 +132,11 @@ const opcionesGrafico = {
         <div class="chart-heading">
           <div>
             <h2 class="title is-4">Ventas por mes</h2>
-            <p class="chart-description">
-              Compara la cantidad de pedidos con las unidades de productos vendidas.
-            </p>
           </div>
         </div>
 
         <div class="chart-container">
-          <Bar
+          <Line
             :data="datosGrafico"
             :options="opcionesGrafico"
             aria-label="Gráfico de ventas y unidades vendidas por mes"
@@ -170,12 +173,6 @@ const opcionesGrafico = {
   text-transform: uppercase;
 }
 
-.demo-tag {
-  border: 1px solid var(--color-borde);
-  background: var(--color-superficie);
-  color: var(--color-secundario);
-}
-
 .summary-cards {
   margin-bottom: 0.5rem;
 }
@@ -205,10 +202,6 @@ const opcionesGrafico = {
 
 .chart-card {
   border: 1px solid var(--color-borde);
-}
-
-.chart-description {
-  margin-top: -0.5rem;
 }
 
 .chart-container {
