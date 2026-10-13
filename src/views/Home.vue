@@ -9,7 +9,7 @@ const error = ref("")
 const busqueda = ref("")
 const productos = ref([])
 
-const URL = "https://dummyjson.com/products"
+const URL = "http://localhost:3000/productos"
 
 async function cargarProductos() {
   cargando.value = true
@@ -21,7 +21,7 @@ async function cargarProductos() {
       throw new Error("No se pudieron cargar los productos.")
     }
     const data = await response.json() // vamos a sacar el mapeo 
-    productos.value = data.products
+    productos.value = data
 
     /*.map(producto => ({
       id: producto.id,
