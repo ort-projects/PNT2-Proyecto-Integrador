@@ -1,5 +1,6 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue'
+import { useAuthStore } from '../store/auth.js'
 import { Line } from 'vue-chartjs'
 import {CategoryScale,Chart as ChartJS,Filler,Legend,LineElement,
   LinearScale,PointElement,Tooltip,} from 'chart.js'
@@ -7,15 +8,19 @@ import {CategoryScale,Chart as ChartJS,Filler,Legend,LineElement,
 ChartJS.register(LineElement,PointElement,CategoryScale,LinearScale,
   Tooltip,Legend,Filler,)
 
-onMounted(() => {getVentasFromApi()});
+onMounted(() => {
+  getVentasFromApi()
+  window.addEventListener('focus', getVentasFromApi)
+});
 
 const anioSeleccionado = new Date().getFullYear()
+const authStore = useAuthStore()
 
 const URL = "http://localhost:3000/admin/dashboard"
 
 const getVentasFromApi = async () => {
   try{
-    const response = await fetch(`${URL}?selectedYear=${anioSeleccionado}`);
+    const response = await authStore.fetchWithAuth(`${URL}?selectedYear=${anioSeleccionado}`);
     if (!response.ok) {
       throw new Error("No se pudieron cargar los productos.")
     }
@@ -36,19 +41,17 @@ const nombresMeses = [
 ]
 
 const resumenMensual = computed(() => {
-  const resumen = Array.from({ length: 12 }, () => ({ ventas: 0, unidades: 0 }))
+  const resumen = Array.from({ length: nombresMeses.length }, () => ({ ventas: 0, unidades: 0 }))
 
   ventas.value.forEach((venta) => {
     const fecha = new Date(`${venta.fecha}T00:00:00`)
 
-    if (fecha.getFullYear() === anioSeleccionado) {
-      const mes = fecha.getMonth()
-      resumen[mes].ventas += 1
-      resumen[mes].unidades += venta.productos.reduce(
-        (total, producto) => total + producto.cantidad,
-        0,
-      )
-    }
+    const mes = fecha.getMonth()
+    resumen[mes].ventas += 1
+    resumen[mes].unidades += venta.productos.reduce(
+      (total, producto) => total + producto.cantidad,
+      0,
+    )    
   })
 
   return resumen

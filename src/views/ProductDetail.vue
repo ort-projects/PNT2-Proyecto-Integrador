@@ -1,8 +1,10 @@
 <script setup>
 import { ref, onMounted } from "vue"
 import { useRoute } from "vue-router"
+import { useAuthStore } from "../store/auth.js"
 
 const route = useRoute()
+const authStore = useAuthStore()
 const product = ref(null)
 const cargando = ref(false)
 const error = ref("")
@@ -12,8 +14,8 @@ async function cargarProducto() {
   error.value = ""
 
   try {
-    const URL = `https://dummyjson.com/products/${route.params.id}`
-    const response = await fetch(URL)
+    const URL = `http://localhost:3000/productos/${route.params.id}`
+    const response = await authStore.fetchWithAuth(URL)
 
     if (!response.ok) {
       throw new Error("No se pudo cargar el producto.")

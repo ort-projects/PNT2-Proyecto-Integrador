@@ -5,6 +5,7 @@ import { useRoute } from 'vue-router'
 const layouts = {
   MainLayout: defineAsyncComponent(() => import('./layouts/MainLayout.vue')),
   AuthLayout: defineAsyncComponent(() => import('./layouts/AuthLayout.vue')),
+  NoneLayout: defineAsyncComponent(() => import('./layouts/NoneLayout.vue')),
 }
 
 const route = useRoute()

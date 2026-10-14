@@ -1,13 +1,16 @@
 <script setup>
 
 import { ref, computed, onMounted } from "vue"
+import { useAuthStore } from "../store/auth.js"
+import { useCatalogStore } from "../store/catalog.js"
 
 import productoList from "../components/productoList.vue"
 
 const cargando = ref(false)
 const error = ref("")
-const busqueda = ref("")
 const productos = ref([])
+const authStore = useAuthStore()
+const catalogStore = useCatalogStore()
 
 const URL = "http://localhost:3000/productos"
 
@@ -16,7 +19,7 @@ async function cargarProductos() {
   error.value = ""
 
   try {
-    const response = await fetch(URL)
+    const response = await authStore.fetchWithAuth(URL)
     if (!response.ok) {
       throw new Error("No se pudieron cargar los productos.")
     }
@@ -44,8 +47,8 @@ onMounted(() => {cargarProductos()})
 const productosFiltrados = computed(() => {
   return productos.value.filter(producto => {
     return (
-      producto.title.toLowerCase().includes(busqueda.value.toLowerCase()) ||
-      producto.category.toLowerCase().includes(busqueda.value.toLowerCase())
+      producto.title.toLowerCase().includes(catalogStore.busqueda.toLowerCase()) ||
+      producto.category.toLowerCase().includes(catalogStore.busqueda.toLowerCase())
     )
   })
 })
@@ -53,31 +56,6 @@ const productosFiltrados = computed(() => {
 
 </script>
 <template>
-    <section class="hero is-light">
-  <div class="hero-body">
-    <div class="container">
-      <h1 class="title">Indumentaria Urbana ModArg</h1>
-      <p class="subtitle">Encontrá tu look</p>
-
-      <div class="field">
-        <label class="label" for="busqueda">Buscar productos</label>
-        <div class="control">
-          <input
-            id="busqueda"
-            v-model="busqueda"
-            class="input"
-            type="search"
-            placeholder="Buscar por nombre o categoría..."
-          />
-        </div>
-      </div>
-
-    <a class="button is-primary is-outlined" href="#catalogo">
-     Ver productos
-    </a>
-    </div>
-  </div>
-</section>
 <section id="catalogo" class="section">
   <div class="container">
     <h2 class="title is-3">Catálogo de productos</h2>
