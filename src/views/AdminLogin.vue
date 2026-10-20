@@ -7,6 +7,7 @@ const username = ref('')
 const password = ref('')
 const error = ref('')
 const cargando = ref(false)
+
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
@@ -16,17 +17,24 @@ async function submitLogin() {
   cargando.value = true
 
   try {
-    const response = await authStore.fetchWithAuth('http://localhost:3000/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: username.value, password: password.value }),
-    })
+    const response = await authStore.fetchWithAuth(
+      'http://localhost:3000/login',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: username.value,
+          password: password.value,
+        }),
+      },
+    )
 
     let data = {}
+
     try {
       data = await response.json()
     } catch {
-      // The response body is optional when the server returns an error.
+      // La respuesta puede no incluir un cuerpo en caso de error.
     }
 
     if (!response.ok) {
@@ -40,14 +48,28 @@ async function submitLogin() {
     authStore.setToken(data.token)
 
     const destination = route.query.redirect
+    const isSafeDestination =
+      typeof destination === 'string' &&
+      destination.startsWith('/') &&
+      !destination.startsWith('//')
+
+    const isAdminDestination =
+      typeof destination === 'string' &&
+      (destination === '/admin' || destination.startsWith('/admin/'))
+
+    const defaultDestination = authStore.isAdmin ? '/admin' : '/'
+
     const safeDestination =
-      typeof destination === 'string' && destination.startsWith('/') && !destination.startsWith('//')
+      isSafeDestination && (authStore.isAdmin || !isAdminDestination)
         ? destination
-        : '/admin'
+        : defaultDestination
 
     await router.replace(safeDestination)
   } catch (err) {
-    error.value = err instanceof Error ? err.message : 'No se pudo iniciar sesión.'
+    error.value =
+      err instanceof Error
+        ? err.message
+        : 'No se pudo iniciar sesión.'
   } finally {
     cargando.value = false
   }
@@ -55,32 +77,38 @@ async function submitLogin() {
 </script>
 
 <template>
-  <section class="section admin-login-section">
+  <section class="section login-section">
     <div class="container">
-      <div class="box admin-login-card">
+      <div class="box login-card">
         <h1 class="title is-3">Ingresar</h1>
 
         <form @submit.prevent="submitLogin">
           <div class="field">
-            <label class="label" for="admin-email">Correo electrónico</label>
+            <label class="label" for="login-email">
+              Correo electrónico
+            </label>
+
             <div class="control">
               <input
-                id="admin-email"
+                id="login-email"
                 v-model="username"
                 class="input"
                 type="email"
                 autocomplete="username"
-                placeholder="admin@modarg.com"
+                placeholder="tu@email.com"
                 required
               />
             </div>
           </div>
 
           <div class="field">
-            <label class="label" for="admin-password">Contraseña</label>
+            <label class="label" for="login-password">
+              Contraseña
+            </label>
+
             <div class="control">
               <input
-                id="admin-password"
+                id="login-password"
                 v-model="password"
                 class="input"
                 type="password"
@@ -91,11 +119,19 @@ async function submitLogin() {
             </div>
           </div>
 
-          <p v-if="error" class="notification is-danger is-light" role="alert">
+          <p
+            v-if="error"
+            class="notification is-danger is-light"
+            role="alert"
+          >
             {{ error }}
           </p>
 
-          <button class="button is-primary is-fullwidth" type="submit" :disabled="cargando">
+          <button
+            class="button is-primary is-fullwidth"
+            type="submit"
+            :disabled="cargando"
+          >
             {{ cargando ? 'Ingresando…' : 'Ingresar' }}
           </button>
         </form>
@@ -105,35 +141,21 @@ async function submitLogin() {
 </template>
 
 <style scoped>
-.admin-login-section {
+.login-section {
   display: grid;
   min-height: calc(100vh - 4.5rem);
   align-items: center;
 }
 
-.admin-login-card {
+.login-card {
   width: min(100%, 30rem);
   margin: 0 auto;
   padding: 2rem;
   border: 1px solid var(--color-borde);
 }
 
-.eyebrow {
-  margin-bottom: 0.5rem;
-  color: var(--color-secundario);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.admin-login-intro {
-  margin-bottom: 1.5rem;
-  color: var(--color-secundario);
-}
-
 @media (max-width: 480px) {
-  .admin-login-card {
+  .login-card {
     padding: 1.5rem;
   }
 }

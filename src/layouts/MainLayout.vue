@@ -50,49 +50,70 @@ function buscarProductos() {
             <path d="m16 16 4.5 4.5" />
           </svg>
         </form>
-
         <div class="header-actions">
-          <div
-            class="cart-indicator"
-            role="img"
-            :aria-label="cantidadEnCarrito ? `Carrito, ${cantidadEnCarrito} artículos` : 'Carrito vacío'"
-          >
-            <svg aria-hidden="true" viewBox="0 0 24 24" class="cart-icon">
-              <path d="M3 4h2l2.2 11.2a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 1.9-1.5L22 8H6" />
-              <circle cx="10" cy="20" r="1" />
-              <circle cx="18" cy="20" r="1" />
-            </svg>
-            <span v-if="cantidadEnCarrito" class="cart-count" aria-hidden="true">
-              {{ cantidadEnCarrito }}
-            </span>
-          </div>
+          
+  <RouterLink
+    to="/cart"
+    class="cart-indicator"
+    :aria-label="
+      cantidadEnCarrito
+        ? `Carrito, ${cantidadEnCarrito} artículos`
+        : 'Carrito vacío'
+    "
+  >
+    <svg aria-hidden="true" viewBox="0 0 24 24" class="cart-icon">
+      <path d="M3 4h2l2.2 11.2a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 1.9-1.5L22 8H6" />
+      <circle cx="10" cy="20" r="1" />
+      <circle cx="18" cy="20" r="1" />
+    </svg>
 
-          <details class="account-menu">
-            <summary class="account-trigger" aria-label="Opciones de cuenta">
-              <svg aria-hidden="true" viewBox="0 0 24 24" class="avatar-icon">
-                <circle cx="12" cy="12" r="10" />
-                <circle cx="12" cy="9" r="3.2" />
-                <path d="M5.8 19a6.5 6.5 0 0 1 12.4 0" />
-              </svg>
-              <span>{{ authStore.isAuthenticated ? authStore.userDisplayName : 'Iniciar sesión' }}</span>
-            </summary>
-            <div class="account-dropdown">
-              <template v-if="authStore.isAuthenticated">
-                <RouterLink v-if="authStore.isAdmin" to="/admin" class="account-link">
-                  Panel de administración
-                </RouterLink>
-                <button type="button" class="account-link" @click="cerrarSesion">Cerrar sesión</button>
-              </template>
-              <RouterLink
-                v-else
-                :to="{ path: '/login', query: { redirect: route.fullPath } }"
-                class="account-link"
-              >
-                Iniciar sesión
-              </RouterLink>
-            </div>
-          </details>
-        </div>
+    <span v-if="cantidadEnCarrito" class="cart-count" aria-hidden="true">
+      {{ cantidadEnCarrito }}
+    </span>
+  </RouterLink>
+
+  <details class="account-menu">
+    <summary class="account-trigger" aria-label="Opciones de cuenta">
+      <svg aria-hidden="true" viewBox="0 0 24 24" class="avatar-icon">
+        <circle cx="12" cy="12" r="10" />
+        <circle cx="12" cy="9" r="3.2" />
+        <path d="M5.8 19a6.5 6.5 0 0 1 12.4 0" />
+      </svg>
+
+      <span>
+        {{ authStore.isAuthenticated ? authStore.userDisplayName : 'Iniciar sesión' }}
+      </span>
+    </summary>
+
+    <div class="account-dropdown">
+      <template v-if="authStore.isAuthenticated">
+        <RouterLink
+          v-if="authStore.isAdmin"
+          to="/admin"
+          class="account-link"
+        >
+          Panel de administración
+        </RouterLink>
+
+        <button
+          type="button"
+          class="account-link"
+          @click="cerrarSesion"
+        >
+          Cerrar sesión
+        </button>
+      </template>
+
+      <RouterLink
+        v-else
+        :to="{ path: '/login', query: { redirect: route.fullPath } }"
+        class="account-link"
+      >
+        Iniciar sesión
+      </RouterLink>
+    </div>
+  </details>
+</div>
       </div>
     </header>
 
