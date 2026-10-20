@@ -28,11 +28,15 @@ const props = defineProps(["producto"])
 
 <style scoped>
 .product-link {
-  display: block;
+  display: flex;
+  height: 100%;
   color: inherit;
 }
 
 .product-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
   height: 100%;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -42,7 +46,19 @@ const props = defineProps(["producto"])
   box-shadow: 0 8px 20px rgb(0 0 0 / 12%);
 }
 
+.product-card .card-image {
+  flex-shrink: 0;
+}
+
+.product-card .card-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
 .product-price {
+  margin-top: auto;
+  padding-top: 1rem;
   font-weight: 700;
 }
 </style>
