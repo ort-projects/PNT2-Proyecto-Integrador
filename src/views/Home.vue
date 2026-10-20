@@ -5,12 +5,14 @@ import { useAuthStore } from "../store/auth.js"
 import { useCatalogStore } from "../store/catalog.js"
 
 import productoList from "../components/productoList.vue"
+import ProductoCarrusel from "../components/productoCarrusel.vue"
 
 const cargando = ref(false)
 const error = ref("")
 const productos = ref([])
 const authStore = useAuthStore()
 const catalogStore = useCatalogStore()
+const productosDestacados = computed(() => productos.value.slice(0, 5))
 
 const URL = "http://localhost:3000/productos"
 
@@ -56,6 +58,12 @@ const productosFiltrados = computed(() => {
 
 </script>
 <template>
+
+  <ProductoCarrusel
+  v-if="!cargando && !error && productos.length > 0"
+  :productos="productosDestacados"
+/>
+
 <section id="catalogo" class="section">
   <div class="container">
     <h2 class="title is-3">Catálogo de productos</h2>
