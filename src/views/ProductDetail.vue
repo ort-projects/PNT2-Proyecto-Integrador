@@ -2,12 +2,20 @@
 import { ref, onMounted } from "vue"
 import { useRoute } from "vue-router"
 import { useAuthStore } from "../store/auth.js"
+import { useCartStore } from "../store/cart.js"
 
 const route = useRoute()
 const authStore = useAuthStore()
+const cartStore = useCartStore()
 const product = ref(null)
 const cargando = ref(false)
 const error = ref("")
+const agregadoAlCarrito = ref(false)
+
+function agregarAlCarrito() {
+  cartStore.agregarProducto(product.value.id)
+  agregadoAlCarrito.value = true
+}
 
 async function cargarProducto() {
   cargando.value = true
@@ -97,6 +105,13 @@ onMounted(cargarProducto)
           <div class="content">
             <p>{{ product.descripcion }}</p>
           </div>
+
+          <button class="button is-primary is-medium" @click="agregarAlCarrito">
+            Agregar al carrito
+          </button>
+          <p v-if="agregadoAlCarrito" class="help is-success" role="status">
+            Producto agregado al carrito.
+          </p>
         </div>
       </div>
     </div>

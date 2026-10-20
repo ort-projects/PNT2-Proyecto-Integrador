@@ -1,5 +1,6 @@
 <script setup>
-import { ref, computed, onMounted } from "vue"
+import { ref, computed, watch, onMounted } from "vue"
+import { useRoute } from "vue-router"
 import { useAuthStore } from "../store/auth.js"
 import { useCatalogStore } from "../store/catalog.js"
 
@@ -10,6 +11,7 @@ const error = ref("")
 const productos = ref([])
 const authStore = useAuthStore()
 const catalogStore = useCatalogStore()
+const route = useRoute()
 const URL = "http://localhost:3000/productos"
 
 async function cargarProductos() {
@@ -30,17 +32,26 @@ async function cargarProductos() {
     cargando.value = false
   }
 }
- 
-onMounted(() => {cargarProductos()})
+
+watch(
+  () => route.query.busqueda,
+  (queryBusqueda) => {
+    catalogStore.busqueda = typeof queryBusqueda === "string" ? queryBusqueda : ""
+  },
+  { immediate: true },
+)
 
 const productosFiltrados = computed(() => {
-  return productos.value.filter(producto => {
-    return (
-      producto.title.toLowerCase().includes(catalogStore.busqueda.toLowerCase()) ||
-      producto.category.toLowerCase().includes(catalogStore.busqueda.toLowerCase())
-    )
-  })
+  const busqueda = catalogStore.busqueda.toLocaleLowerCase()
+  if (!busqueda) return productos.value
+
+  return productos.value.filter(producto =>
+    producto.title.toLocaleLowerCase().includes(busqueda) ||
+    producto.category.toLocaleLowerCase().includes(busqueda)
+  )
 })
+
+onMounted(cargarProductos)
 
 </script>
 
@@ -53,7 +64,10 @@ const productosFiltrados = computed(() => {
 
     <div v-else-if="error" class="notification is-danger is-light">
       <p>{{ error }}</p>
-      <button class="button mt-3" @click="cargarProductos">
+      <button
+        class="button mt-3"
+        @click="cargarProductos"
+      >
         Reintentar
       </button>
     </div>
