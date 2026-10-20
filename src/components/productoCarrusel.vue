@@ -22,8 +22,7 @@ function desplazar(direccion) {
 
 <template>
   <section class="featured-section" aria-labelledby="destacados-title">
-    <h2 id="destacados-title" class="title is-3">Destacados</h2>
-
+    
     <div class="featured-carousel-wrapper">
       <button
         class="carousel-arrow"

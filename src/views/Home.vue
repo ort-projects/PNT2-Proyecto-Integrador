@@ -13,7 +13,7 @@ const productos = ref([])
 const authStore = useAuthStore()
 const catalogStore = useCatalogStore()
 const productosDestacados = computed(() => productos.value.slice(0, 5))
-
+const productosOferta = computed(() => productos.value.slice(5, 10 ))
 const URL = "http://localhost:3000/productos"
 
 async function cargarProductos() {
@@ -25,17 +25,8 @@ async function cargarProductos() {
     if (!response.ok) {
       throw new Error("No se pudieron cargar los productos.")
     }
-    const data = await response.json() // vamos a sacar el mapeo 
+    const data = await response.json() 
     productos.value = data
-
-    /*.map(producto => ({
-      id: producto.id,
-      nombre: producto.title,
-      precio: producto.price,
-      categoria: producto.category,
-      imagen: producto.thumbnail,
-      descripcion: producto.description
-    }))*/
 
   } catch (err) {
     error.value = err.message
@@ -59,14 +50,8 @@ const productosFiltrados = computed(() => {
 </script>
 <template>
 
-  <ProductoCarrusel
-  v-if="!cargando && !error && productos.length > 0"
-  :productos="productosDestacados"
-/>
-
-<section id="catalogo" class="section">
-  <div class="container">
-    <h2 class="title is-3">Catálogo de productos</h2>
+ <div class="container">
+    <h2 class="title is-3">Productos destacados</h2>
 
     <p v-if="cargando">Cargando productos...</p>
 
@@ -76,8 +61,8 @@ const productosFiltrados = computed(() => {
         Reintentar
       </button>
     </div>
-
-    <p v-else-if="productos.length === 0">
+    
+     <p v-else-if="productos.length === 0">
       Todavía no hay productos para mostrar.
     </p>
 
@@ -85,12 +70,38 @@ const productosFiltrados = computed(() => {
       No se encontraron productos con esa búsqueda.
     </p>
 
-    <productoList
-      v-else
-      :productos="productosFiltrados"
-    />
+  <ProductoCarrusel
+    v-else
+  :productos="productosDestacados"
+  />
   </div>
-</section>
+  <div class="container">
+    <h2 class="title is-3">Ofertas del dia </h2>
+
+    <p v-if="cargando">Cargando productos...</p>
+
+    <div v-else-if="error" class="notification is-danger is-light">
+      <p>{{ error }}</p>
+      <button class="button mt-3" @click="cargarProductos">
+        Reintentar
+      </button>
+    </div>
+    
+     <p v-else-if="productosOferta.length === 0">
+      Todavía no hay productos para mostrar.
+    </p>
+
+    <p v-else-if="productosOferta.length === 0">
+      No se encontraron productos con esa búsqueda.
+    </p>
+
+ <ProductoCarrusel
+    v-else
+  :productos="productosOferta"
+ />
+ </div>
+
+
 </template>
 
 <style scoped></style>
