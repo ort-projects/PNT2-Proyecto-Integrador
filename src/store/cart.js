@@ -41,5 +41,23 @@ export const useCartStore = defineStore('cart', {
 
       persistirCarrito(this.items)
     },
+    aumentarCantidad(id) {
+      const producto = this.items.find((item) => String(item.id) === String(id))
+      if (!producto) return
+
+      producto.cantidad += 1
+      persistirCarrito(this.items)
+    },
+    disminuirCantidad(id) {
+      const producto = this.items.find((item) => String(item.id) === String(id))
+      if (!producto || producto.cantidad <= 1) return
+
+      producto.cantidad -= 1
+      persistirCarrito(this.items)
+    },
+    quitarProducto(id) {
+      this.items = this.items.filter((item) => String(item.id) !== String(id))
+      persistirCarrito(this.items)
+    },
   },
 })
