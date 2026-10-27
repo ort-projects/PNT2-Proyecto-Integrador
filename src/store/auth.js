@@ -83,4 +83,6 @@ export const useAuthStore = defineStore('auth', {
       return fetch(input, { ...options, headers })
     },
   },
+
+
 })
