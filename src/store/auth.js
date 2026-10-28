@@ -80,7 +80,20 @@ export const useAuthStore = defineStore('auth', {
         headers.set('Authorization', `Bearer ${this.token}`)
       }
 
-      return fetch(input, { ...options, headers })
+      return fetch(input, { ...options, headers }).then((response) => {
+        if (response.status === 401) {
+          this.logout()
+
+          if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+            const returnUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`
+            const loginUrl = new URL('/login', window.location.origin)
+            loginUrl.searchParams.set('redirect', returnUrl)
+            window.location.assign(loginUrl)
+          }
+        }
+
+        return response
+      })
     },
   },
 })
