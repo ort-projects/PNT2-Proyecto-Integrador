@@ -78,16 +78,67 @@ onMounted(cargarProductosDelCarrito)
 
 const enviandoPedido = ref(false)
 const errorPedido = ref('')
+const toastPedido = ref('')
+let toastTimeoutId
+
+function mostrarToast(mensaje) {
+  toastPedido.value = mensaje
+  window.clearTimeout(toastTimeoutId)
+
+  toastTimeoutId = window.setTimeout(() => {
+    toastPedido.value = ''
+  }, 5000)
+}
+
+async function enviarPedido() {
+  const items = cartStore.obtenerItems().map(({ id, cantidad }) => ({
+    productoId: id,
+    cantidad,
+  }))
+
+  if (items.length === 0) {
+    throw new Error('El carrito está vacío.')
+  }
+
+  const response = await authStore.fetchWithAuth(
+    'http://localhost:3000/pedidos',
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items }),
+    },
+  )
+
+  const data = await response.json().catch(() => ({}))
+
+  if (!response.ok) {
+    const message =
+      response.status === 404
+        ? data.message || data.error?.message || 'No se encontró la ruta POST /pedidos.'
+        : data.message || data.error?.message || 'No se pudo registrar el pedido.'
+    const requestError = new Error(message)
+    requestError.status = response.status
+    throw requestError
+  }
+
+  cartStore.vaciarCarrito()
+  return data
+}
 
 async function confirmarPedido() {
   errorPedido.value = ''
+  toastPedido.value = ''
   enviandoPedido.value = true
 
   try {
-    await cartStore.enviarPedido()
+    await enviarPedido()
   } catch (err) {
-    errorPedido.value =
-      err instanceof Error ? err.message : 'No se pudo enviar el pedido.'
+    if (err?.status === 404) {
+      mostrarToast(`${err.message} El carrito se conserva.`)
+    } else {
+      errorPedido.value =
+        err instanceof Error ? err.message : 'No se pudo enviar el pedido.'
+    }
   } finally {
     enviandoPedido.value = false
   }
@@ -97,6 +148,18 @@ async function confirmarPedido() {
 
 <template>
   <section class="section">
+    <div v-if="toastPedido" class="cart-toast" role="alert" aria-live="assertive">
+      <span>{{ toastPedido }}</span>
+      <button
+        type="button"
+        class="cart-toast-close"
+        aria-label="Cerrar notificación"
+        @click="toastPedido = ''"
+      >
+        ×
+      </button>
+    </div>
+
     <div class="container">
       <h1 class="title is-2">Mi carrito</h1>
 
@@ -149,7 +212,7 @@ async function confirmarPedido() {
                 <button
                   type="button"
                   :aria-label="`Disminuir cantidad de ${producto.title}`"
-                  :disabled="producto.cantidad <= 1"
+                  :disabled="enviandoPedido || producto.cantidad <= 1"
                   @click="cartStore.disminuirCantidad(producto.id)"
                 >
                   −
@@ -160,6 +223,7 @@ async function confirmarPedido() {
                 <button
                   type="button"
                   :aria-label="`Aumentar cantidad de ${producto.title}`"
+                  :disabled="enviandoPedido"
                   @click="cartStore.aumentarCantidad(producto.id)"
                 >
                   +
@@ -176,6 +240,7 @@ async function confirmarPedido() {
               <button
                 type="button"
                 class="button is-small is-light remove-cart-item"
+                :disabled="enviandoPedido"
                 @click="cartStore.quitarProducto(producto.id)"
               >
                 Eliminar
@@ -213,6 +278,34 @@ async function confirmarPedido() {
 </template>
 
 <style scoped>
+.cart-toast {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  width: min(28rem, calc(100vw - 2.5rem));
+  padding: 1rem 1.25rem;
+  border-left: 5px solid #b42335;
+  border-radius: 0.5rem;
+  background: #fff0f1;
+  box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 18%);
+  color: #7f1d2d;
+}
+
+.cart-toast-close {
+  flex: 0 0 auto;
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
 .cart-count-text {
   margin-bottom: 1rem;
   color: var(--color-secundario);

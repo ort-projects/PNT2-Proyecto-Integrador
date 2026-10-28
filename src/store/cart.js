@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { useAuthStore } from './auth.js'
 
 const STORAGE_KEY = 'carrito'
 
@@ -62,12 +61,12 @@ export const useCartStore = defineStore('cart', {
     },
 
     obtenerItems() {
-    return this.items.map(({ id, cantidad }) => ({ id, cantidad }))
+      return this.items.map(({ id, cantidad }) => ({ id, cantidad }))
     },
 
-  vaciarCarrito() {
-    this.items = []
-    persistirCarrito(this.items)
-  },
+    vaciarCarrito() {
+      this.items = []
+      persistirCarrito(this.items)
+    },
   },
 })
