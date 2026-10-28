@@ -65,41 +65,6 @@ export const useCartStore = defineStore('cart', {
     return this.items.map(({ id, cantidad }) => ({ id, cantidad }))
     },
 
-    async enviarPedido() {
-    const items = this.obtenerItems().map(({ id, cantidad }) => ({
-    productoId: id,
-    cantidad,
-    }))
-
-    if (items.length === 0) {
-    throw new Error('El carrito está vacío.')
-    }
-
-    const authStore = useAuthStore()
-
-    const response = await authStore.fetchWithAuth(
-      'http://localhost:3000/pedidos',
-      {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items }),
-      },
-    )
-
-    const data = await response.json().catch(() => ({}))
-
-    if (!response.ok) {
-      throw new Error(
-        data.message || data.error?.message || 'No se pudo registrar el pedido.',
-     )
-  }
-
-  // Se vacía solamente después de que el backend confirmó el pedido.
-    this.vaciarCarrito()
-
-    return data
-  },
-
   vaciarCarrito() {
     this.items = []
     persistirCarrito(this.items)
