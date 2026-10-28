@@ -91,10 +91,7 @@ function mostrarToast(mensaje) {
 }
 
 async function enviarPedido() {
-  const items = cartStore.obtenerItems().map(({ id, cantidad }) => ({
-    productoId: id,
-    cantidad,
-  }))
+  const items = cartStore.obtenerItems()
 
   if (items.length === 0) {
     throw new Error('El carrito está vacío.')

@@ -61,7 +61,7 @@ export const useCartStore = defineStore('cart', {
     },
 
     obtenerItems() {
-      return this.items.map(({ id, cantidad }) => ({ id, cantidad }))
+      return this.items.map(({ id, cantidad }) => ({ productId: id, quantity: cantidad }))
     },
 
     vaciarCarrito() {
