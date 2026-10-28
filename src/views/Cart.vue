@@ -75,6 +75,24 @@ async function cargarProductosDelCarrito() {
 }
 
 onMounted(cargarProductosDelCarrito)
+
+const enviandoPedido = ref(false)
+const errorPedido = ref('')
+
+async function confirmarPedido() {
+  errorPedido.value = ''
+  enviandoPedido.value = true
+
+  try {
+    await cartStore.enviarPedido()
+  } catch (err) {
+    errorPedido.value =
+      err instanceof Error ? err.message : 'No se pudo enviar el pedido.'
+  } finally {
+    enviandoPedido.value = false
+  }
+}
+
 </script>
 
 <template>
@@ -174,6 +192,19 @@ onMounted(cargarProductosDelCarrito)
             <RouterLink to="/catalog" class="button is-outlined">
               Seguir comprando
             </RouterLink>
+
+            <p v-if="errorPedido" class="notification is-danger is-light" role="alert">
+            {{ errorPedido }}
+            </p>
+
+            <button
+            type="button"
+            class="button is-primary"
+            :disabled="enviandoPedido || cartStore.items.length === 0"
+              @click="confirmarPedido"
+>
+            {{ enviandoPedido ? 'Enviando pedido…' : 'Confirmar compra' }}
+            </button>
           </div>
         </div>
       </div>

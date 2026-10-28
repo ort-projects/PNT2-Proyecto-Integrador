@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { useAuthStore } from './auth.js'
 
 const STORAGE_KEY = 'carrito'
 
@@ -59,5 +60,49 @@ export const useCartStore = defineStore('cart', {
       this.items = this.items.filter((item) => String(item.id) !== String(id))
       persistirCarrito(this.items)
     },
+
+    obtenerItems() {
+    return this.items.map(({ id, cantidad }) => ({ id, cantidad }))
+    },
+
+    async enviarPedido() {
+    const items = this.obtenerItems().map(({ id, cantidad }) => ({
+    productoId: id,
+    cantidad,
+    }))
+
+    if (items.length === 0) {
+    throw new Error('El carrito está vacío.')
+    }
+
+    const authStore = useAuthStore()
+
+    const response = await authStore.fetchWithAuth(
+      'http://localhost:3000/pedidos',
+      {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ items }),
+      },
+    )
+
+    const data = await response.json().catch(() => ({}))
+
+    if (!response.ok) {
+      throw new Error(
+        data.message || data.error?.message || 'No se pudo registrar el pedido.',
+     )
+  }
+
+  // Se vacía solamente después de que el backend confirmó el pedido.
+    this.vaciarCarrito()
+
+    return data
+  },
+
+  vaciarCarrito() {
+    this.items = []
+    persistirCarrito(this.items)
+  },
   },
 })
