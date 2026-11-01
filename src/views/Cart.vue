@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useAuthStore } from '../store/auth.js'
 import { useCartStore } from '../store/cart.js'
+import AuthModal from '../components/AuthModal.vue'
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
@@ -79,6 +80,7 @@ onMounted(cargarProductosDelCarrito)
 const enviandoPedido = ref(false)
 const errorPedido = ref('')
 const toastPedido = ref('')
+const authModalOpen = ref(false)
 let toastTimeoutId
 
 function mostrarToast(mensaje) {
@@ -103,6 +105,7 @@ async function enviarPedido() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ items }),
+      redirectOn401: false,
     },
   )
 
@@ -130,7 +133,10 @@ async function confirmarPedido() {
   try {
     await enviarPedido()
   } catch (err) {
-    if (err?.status === 404) {
+    if (err?.status === 401) {
+      errorPedido.value = ''
+      authModalOpen.value = true
+    } else if (err?.status === 404) {
       mostrarToast(`${err.message} El carrito se conserva.`)
     } else {
       errorPedido.value =
@@ -141,10 +147,21 @@ async function confirmarPedido() {
   }
 }
 
+async function continuarCompraAutenticada() {
+  authModalOpen.value = false
+  await confirmarPedido()
+}
+
 </script>
 
 <template>
   <section class="section">
+    <AuthModal
+      :open="authModalOpen"
+      @close="authModalOpen = false"
+      @authenticated="continuarCompraAutenticada"
+    />
+
     <div v-if="toastPedido" class="cart-toast" role="alert" aria-live="assertive">
       <span>{{ toastPedido }}</span>
       <button

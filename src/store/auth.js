@@ -73,18 +73,73 @@ export const useAuthStore = defineStore('auth', {
       this.setToken('')
     },
 
+    async login(username, password) {
+      const response = await fetch('http://localhost:3000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      })
+
+      const data = await response.json().catch(() => ({}))
+
+      if (!response.ok) {
+        throw new Error(
+          data.message || data.error?.message || 'No se pudo iniciar sesión.',
+        )
+      }
+
+      if (typeof data.token !== 'string' || !data.token) {
+        throw new Error('El servidor no devolvió un token de acceso válido.')
+      }
+
+      this.setToken(data.token)
+      return data
+    },
+
+    async registerUser({ username, name, surname, password }) {
+      const response = await fetch('http://localhost:3000/usuarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, name, surname, password }),
+      })
+
+      const data = await response.json().catch(() => ({}))
+
+      if (!response.ok) {
+        if (
+          response.status === 409 ||
+          data.error?.code === 'USERNAME_EN_USO'
+        ) {
+          throw new Error('Ya existe una cuenta registrada con ese email.')
+        }
+
+        throw new Error(
+          data.error?.message || data.message || 'No se pudo crear la cuenta.',
+        )
+      }
+
+      // El contrato documentado devuelve 201 sin token; iniciamos sesión con esas credenciales.
+      await this.login(username, password)
+      return data
+    },
+
     fetchWithAuth(input, options = {}) {
-      const headers = new Headers(options.headers)
+      const { redirectOn401 = true, ...fetchOptions } = options
+      const headers = new Headers(fetchOptions.headers)
 
       if (this.token) {
         headers.set('Authorization', `Bearer ${this.token}`)
       }
 
-      return fetch(input, { ...options, headers }).then((response) => {
+      return fetch(input, { ...fetchOptions, headers }).then((response) => {
         if (response.status === 401) {
           this.logout()
 
-          if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+          if (
+            redirectOn401 &&
+            typeof window !== 'undefined' &&
+            window.location.pathname !== '/login'
+          ) {
             const returnUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`
             const loginUrl = new URL('/login', window.location.origin)
             loginUrl.searchParams.set('redirect', returnUrl)
