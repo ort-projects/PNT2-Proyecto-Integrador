@@ -13,7 +13,7 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 | 1 | Confirmar compra (`POST /pedidos`) | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 2 | Compra exitosa: mensaje, vaciar carrito y redirección | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 3 | Mis pedidos: listado de pedidos del usuario logueado | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
-| 4 | Modal de login / crear usuario (ante `401`) | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![OK](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
+| 4 | Modal de login / crear usuario (ante `401`) | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
 | 5 | Admin: listado de pedidos de todos los usuarios | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 6 | Admin: filtro de pedidos por usuario | ![Baja](https://img.shields.io/badge/prioridad-BAJA-28a745?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 7 | Admin: generar oferta semanal | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Sin asignar](https://img.shields.io/badge/-sin%20asignar-555555?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
@@ -32,7 +32,7 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 |--------|-------------|
 | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) | Sin empezar |
 | ![En curso](https://img.shields.io/badge/-en%20curso-f9a825?style=flat-square) | Alguien la está haciendo |
-| ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) | Terminada y mergeada |
+| ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) | Terminada en el código |
 
 ### Carga por persona
 
@@ -123,7 +123,7 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 
 ---
 
-## 🔴 Tarea 4 — Modal de login / crear usuario
+## ✅ Tarea 4 — Modal de login / crear usuario
 
 | Prioridad | Responsable | Vista / archivos |
 |:---------:|:-----------:|------------------|
@@ -142,14 +142,14 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 
 **Criterios de aceptación**
 
-- [ ] El modal se abre cuando el `POST /pedidos` devuelve `401`.
-- [ ] Modal de login con opción para pasar a "Crear usuario".
-- [ ] Formulario de registro con validaciones (campos obligatorios, formato de email, contraseña).
-- [ ] Integración con el endpoint de creación de usuario (confirmar ruta y payload con backend).
-- [ ] Mensajes de error claros (por ejemplo, email ya registrado).
-- [ ] Después de loguearse o registrarse, se puede continuar con la compra sin perder el carrito.
+- [x] El modal se abre cuando el `POST /pedidos` devuelve `401`.
+- [x] Modal de login con opción para pasar a "Crear usuario".
+- [x] Formulario de registro con validaciones (campos obligatorios, formato de email, contraseña de al menos 8 caracteres).
+- [x] Integración con `POST /usuarios`, enviando `{ username, name, surname, password }`.
+- [x] Mensajes de error claros, incluido email ya registrado (`409`).
+- [x] Después de loguearse o registrarse, se reintenta la compra sin perder el carrito.
 
-> 🔗 **Se integra con:** Tarea 1. Gabriel abre el modal ante el `401`; Dana arma el modal y los formularios. Coordinar cómo se dispara (prop, evento o store).
+> 🔗 **Integración:** ante el `401`, `Cart.vue` abre el modal; al autenticarse, el carrito reintenta `POST /pedidos`.
 
 ---
 
