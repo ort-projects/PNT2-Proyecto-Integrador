@@ -17,35 +17,7 @@ async function submitLogin() {
   cargando.value = true
 
   try {
-    const response = await authStore.fetchWithAuth(
-      'http://localhost:3000/login',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: username.value,
-          password: password.value,
-        }),
-      },
-    )
-
-    let data = {}
-
-    try {
-      data = await response.json()
-    } catch {
-      // La respuesta puede no incluir un cuerpo en caso de error.
-    }
-
-    if (!response.ok) {
-      throw new Error(data.error?.message || 'No se pudo iniciar sesión.')
-    }
-
-    if (typeof data.token !== 'string' || !data.token) {
-      throw new Error('El servidor no devolvió un token de acceso válido.')
-    }
-
-    authStore.setToken(data.token)
+    await authStore.login(username.value, password.value)
 
     const destination = route.query.redirect
     const isSafeDestination =
