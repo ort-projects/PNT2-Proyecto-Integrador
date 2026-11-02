@@ -103,8 +103,7 @@ async function enviarPedido() {
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items }),
-      redirectOn401: false,
+      body: JSON.stringify({ items })
     },
   )
 
@@ -131,6 +130,11 @@ function compraExitosa() {
 async function confirmarPedido() {
   if (enviandoPedido.value) return
 
+  if (!authStore.isAuthenticated) {
+    authStore.abrirLoginModal()
+    return
+  }
+
   errorPedido.value = ''
   toastPedido.value = ''
   enviandoPedido.value = true
@@ -139,16 +143,12 @@ async function confirmarPedido() {
     await enviarPedido()
     compraExitosa()
   } catch (err) {
-    if (err?.status === 401) {
-  errorPedido.value =
-    'Iniciá sesión para confirmar la compra. Tu carrito se conserva.'
-  authStore.abrirLoginModal()
-} else if (err?.status === 404) {
-  mostrarToast(`${err.message} El carrito se conserva.`)
-} else {
-  errorPedido.value =
-    err instanceof Error ? err.message : 'No se pudo enviar el pedido.'
-}
+    if (err?.status === 404) {
+      mostrarToast(`${err.message} El carrito se conserva.`)
+    } else {
+      errorPedido.value =
+        err instanceof Error ? err.message : 'No se pudo enviar el pedido.'
+    }
   } finally {
     enviandoPedido.value = false
   }
@@ -156,7 +156,6 @@ async function confirmarPedido() {
 
 async function continuarCompraAutenticada() {
   authStore.cerrarLoginModal()
-  await confirmarPedido()
 }
 
 </script>
@@ -166,7 +165,7 @@ async function continuarCompraAutenticada() {
     <AuthModal
   :open="authStore.loginModalAbierto"
   @close="authStore.cerrarLoginModal()"
-  @authenticated="continuarCompraAutenticada"
+  @authenticated="authStore.cerrarLoginModal()"
 />
 
     <div v-if="toastPedido" class="cart-toast" role="alert" aria-live="assertive">
