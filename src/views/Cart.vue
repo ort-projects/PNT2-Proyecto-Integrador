@@ -80,7 +80,6 @@ onMounted(cargarProductosDelCarrito)
 const enviandoPedido = ref(false)
 const errorPedido = ref('')
 const toastPedido = ref('')
-const authModalOpen = ref(false)
 let toastTimeoutId
 
 function mostrarToast(mensaje) {
@@ -121,34 +120,42 @@ async function enviarPedido() {
     throw requestError
   }
 
-  cartStore.vaciarCarrito()
   return data
 }
 
+// Flujo de compra exitosa (Tarea 2): mensaje, vaciar carrito y redirección a "Mis pedidos".
+function compraExitosa() {
+  cartStore.vaciarCarrito()
+}
+
 async function confirmarPedido() {
+  if (enviandoPedido.value) return
+
   errorPedido.value = ''
   toastPedido.value = ''
   enviandoPedido.value = true
 
   try {
     await enviarPedido()
+    compraExitosa()
   } catch (err) {
     if (err?.status === 401) {
-      errorPedido.value = ''
-      authModalOpen.value = true
-    } else if (err?.status === 404) {
-      mostrarToast(`${err.message} El carrito se conserva.`)
-    } else {
-      errorPedido.value =
-        err instanceof Error ? err.message : 'No se pudo enviar el pedido.'
-    }
+  errorPedido.value =
+    'Iniciá sesión para confirmar la compra. Tu carrito se conserva.'
+  authStore.abrirLoginModal()
+} else if (err?.status === 404) {
+  mostrarToast(`${err.message} El carrito se conserva.`)
+} else {
+  errorPedido.value =
+    err instanceof Error ? err.message : 'No se pudo enviar el pedido.'
+}
   } finally {
     enviandoPedido.value = false
   }
 }
 
 async function continuarCompraAutenticada() {
-  authModalOpen.value = false
+  authStore.cerrarLoginModal()
   await confirmarPedido()
 }
 
@@ -157,10 +164,10 @@ async function continuarCompraAutenticada() {
 <template>
   <section class="section">
     <AuthModal
-      :open="authModalOpen"
-      @close="authModalOpen = false"
-      @authenticated="continuarCompraAutenticada"
-    />
+  :open="authStore.loginModalAbierto"
+  @close="authStore.cerrarLoginModal()"
+  @authenticated="continuarCompraAutenticada"
+/>
 
     <div v-if="toastPedido" class="cart-toast" role="alert" aria-live="assertive">
       <span>{{ toastPedido }}</span>

@@ -34,6 +34,8 @@ function readTokenClaims(token) {
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     token: readStoredToken(),
+    // Lo abre el carrito ante un 401 en POST /pedidos; el modal de login lo escucha.
+    loginModalAbierto: false,
   }),
 
   getters: {
@@ -123,7 +125,16 @@ export const useAuthStore = defineStore('auth', {
       return data
     },
 
-    fetchWithAuth(input, options = {}) {
+    abrirLoginModal() {
+      this.loginModalAbierto = true
+    },
+
+    cerrarLoginModal() {
+      this.loginModalAbierto = false
+    },
+
+    // redirectOn401: false deja que la vista maneje el 401 (por ejemplo, abriendo el modal de login).
+    fetchWithAuth(input, { redirectOn401 = true, ...options } = {}) {
       const { redirectOn401 = true, ...fetchOptions } = options
       const headers = new Headers(fetchOptions.headers)
 
@@ -135,7 +146,7 @@ export const useAuthStore = defineStore('auth', {
         if (response.status === 401) {
           this.logout()
 
-          if (
+          if (redirectOn401 && 
             redirectOn401 &&
             typeof window !== 'undefined' &&
             window.location.pathname !== '/login'

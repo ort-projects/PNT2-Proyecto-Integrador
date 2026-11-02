@@ -151,6 +151,21 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 
 > 🔗 **Integración:** ante el `401`, `Cart.vue` abre el modal; al autenticarse, el carrito reintenta `POST /pedidos`.
 
+**Integración con la Tarea 1 (ya implementada en `Cart.vue`)**
+
+El modal se dispara por **store** (`src/store/auth.js`):
+
+| Qué | Cómo |
+|-----|------|
+| Abrir el modal | Ante un `401` en `POST /pedidos`, `Cart.vue` llama a `authStore.abrirLoginModal()`, que pone `authStore.loginModalAbierto` en `true`. |
+| Mostrar el modal | El componente del modal se muestra con `v-if="authStore.loginModalAbierto"`. |
+| Cerrar el modal | Llamar a `authStore.cerrarLoginModal()` al cancelar y después de un login o registro exitoso (luego de `authStore.setToken(token)`). |
+| Seguir con la compra | El carrito no se toca ante el `401`, así que alcanza con que el usuario vuelva a hacer clic en **Confirmar compra**. |
+
+- Mientras el modal no exista, ante un `401` el carrito solo muestra el mensaje "Iniciá sesión para confirmar la compra. Tu carrito se conserva."
+- El `POST /pedidos` usa `fetchWithAuth(url, { ..., redirectOn401: false })`: el token vencido se borra igual, pero no redirige a `/login`. Si el modal hace pedidos propios que puedan devolver `401`, usar la misma opción para que no lo saque de la página.
+- Opcional: reintentar la compra automáticamente después del login (por ejemplo, que `Cart.vue` observe `loginModalAbierto` y vuelva a llamar a `confirmarPedido()` cuando se cierre con sesión iniciada).
+
 ---
 
 ## 🔴 Tarea 5 — Admin: listado de pedidos de todos los usuarios
