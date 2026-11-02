@@ -103,6 +103,7 @@ async function enviarPedido() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ items }),
+      redirectOn401: false,
     },
   )
 
@@ -118,19 +119,29 @@ async function enviarPedido() {
     throw requestError
   }
 
-  cartStore.vaciarCarrito()
   return data
 }
 
+// Flujo de compra exitosa (Tarea 2): mensaje, vaciar carrito y redirección a "Mis pedidos".
+function compraExitosa() {
+  cartStore.vaciarCarrito()
+}
+
 async function confirmarPedido() {
+  if (enviandoPedido.value) return
+
   errorPedido.value = ''
   toastPedido.value = ''
   enviandoPedido.value = true
 
   try {
     await enviarPedido()
+    compraExitosa()
   } catch (err) {
-    if (err?.status === 404) {
+    if (err?.status === 401) {
+      errorPedido.value = 'Iniciá sesión para confirmar la compra. Tu carrito se conserva.'
+      authStore.abrirLoginModal()
+    } else if (err?.status === 404) {
       mostrarToast(`${err.message} El carrito se conserva.`)
     } else {
       errorPedido.value =
