@@ -9,7 +9,7 @@ const cargando = ref(false)
 const error = ref("")
 const productos = ref([])
 const authStore = useAuthStore()
-const productosDestacados = computed(() => productos.value.slice(0, 5))
+const productosDestacados = computed(() => productos.value.filter((producto) => producto.destacado).slice(0, 5))
 const productosOferta = computed(() => productos.value.slice(5, 10))
 const URL = "http://localhost:3000/productos"
 
