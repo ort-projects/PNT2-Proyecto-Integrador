@@ -39,7 +39,11 @@ export const useAuthStore = defineStore('auth', {
   }),
 
   getters: {
-    isAuthenticated: (state) => Boolean(state.token),
+    isAuthenticated: (state) => {
+      if (!state.token) return false
+      const exp = readTokenClaims(state.token)?.exp
+      return typeof exp !== 'number' || exp * 1000 > Date.now()
+    },
     isAdmin: (state) => {
       return readTokenClaims(state.token)?.role === 'admin'
     },
@@ -133,8 +137,8 @@ export const useAuthStore = defineStore('auth', {
       this.loginModalAbierto = false
     },
 
-    fetchWithAuth(input, {...options } = {}) {
-      const { redirectOn401 = true, ...fetchOptions } = options
+    // redirectOn401: false deja que la vista maneje el 401 (por ejemplo, abriendo el modal de login).
+    fetchWithAuth(input, { redirectOn401 = true, ...fetchOptions } = {}) {
       const headers = new Headers(fetchOptions.headers)
 
       if (this.token) {
@@ -146,6 +150,7 @@ export const useAuthStore = defineStore('auth', {
           this.logout()
 
           if (
+            redirectOn401 &&
             typeof window !== 'undefined' &&
             window.location.pathname !== '/login'
           ) {

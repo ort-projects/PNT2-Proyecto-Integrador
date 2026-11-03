@@ -103,7 +103,8 @@ async function enviarPedido() {
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items })
+      body: JSON.stringify({ items }),
+      redirectOn401: false,
     },
   )
 
@@ -130,20 +131,26 @@ function compraExitosa() {
 async function confirmarPedido() {
   if (enviandoPedido.value) return
 
+  errorPedido.value = ''
+  toastPedido.value = ''
+
   if (!authStore.isAuthenticated) {
     authStore.abrirLoginModal()
     return
   }
 
-  errorPedido.value = ''
-  toastPedido.value = ''
   enviandoPedido.value = true
 
   try {
     await enviarPedido()
     compraExitosa()
   } catch (err) {
-    if (err?.status === 404) {
+    // 401 con token vencido: fetchWithAuth ya borró el token; el carrito se conserva.
+    if (err?.status === 401) {
+      errorPedido.value =
+        'Iniciá sesión para confirmar la compra. Tu carrito se conserva.'
+      authStore.abrirLoginModal()
+    } else if (err?.status === 404) {
       mostrarToast(`${err.message} El carrito se conserva.`)
     } else {
       errorPedido.value =
@@ -154,7 +161,8 @@ async function confirmarPedido() {
   }
 }
 
-async function continuarCompraAutenticada() {
+function continuarCompraAutenticada() {
+  errorPedido.value = ''
   authStore.cerrarLoginModal()
 }
 
@@ -165,7 +173,7 @@ async function continuarCompraAutenticada() {
     <AuthModal
   :open="authStore.loginModalAbierto"
   @close="authStore.cerrarLoginModal()"
-  @authenticated="authStore.cerrarLoginModal()"
+  @authenticated="continuarCompraAutenticada"
 />
 
     <div v-if="toastPedido" class="cart-toast" role="alert" aria-live="assertive">

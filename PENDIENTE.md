@@ -10,7 +10,7 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 
 | # | Tarea | Prioridad | Responsable | Estado |
 |:-:|-------|:---------:|:-----------:|:------:|
-| 1 | Confirmar compra (`POST /pedidos`) | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
+| 1 | Confirmar compra (`POST /pedidos`) | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
 | 2 | Compra exitosa: mensaje, vaciar carrito y redirección | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 3 | Mis pedidos: listado de pedidos del usuario logueado | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 4 | Modal de login / crear usuario (ante `401`) | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
@@ -45,7 +45,7 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 
 ---
 
-## 🔴 Tarea 1 — Confirmar compra
+## ✅ Tarea 1 — Confirmar compra
 
 | Prioridad | Responsable | Vista / archivos |
 |:---------:|:-----------:|------------------|
@@ -56,22 +56,24 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 **Flujo esperado**
 
 1. El usuario hace clic en **Confirmar compra** desde el carrito.
-2. Se hace el `POST /pedidos` **directamente** con los ítems del carrito (sin modal previo).
-3. Según la respuesta del backend:
+2. Si no hay sesión iniciada (`authStore.isAuthenticated` es `false`), se abre el **modal de login** (Tarea 4) sin hacer el `POST`. El carrito queda intacto.
+3. Si hay sesión, se hace el `POST /pedidos` con los ítems del carrito.
+4. Según la respuesta del backend:
 
 | Respuesta | Qué pasa |
 |:---------:|----------|
 | ![201](https://img.shields.io/badge/-201%20Created-28a745?style=flat-square) | Se pasa al flujo de **compra exitosa** (Tarea 2). |
-| ![401](https://img.shields.io/badge/-401%20Unauthorized-f9a825?style=flat-square) | Se abre el **modal de login** con la opción de **crear usuario** (Tarea 4). El carrito queda intacto. |
+| ![401](https://img.shields.io/badge/-401%20Unauthorized-f9a825?style=flat-square) | El token venció o el backend lo rechazó: se borra el token y se abre el **modal de login** con la opción de **crear usuario** (Tarea 4), sin redirigir a `/login`. El carrito queda intacto. |
 | ![Error](https://img.shields.io/badge/-otro%20error-d73a49?style=flat-square) | Se muestra el mensaje de error y el carrito queda intacto. |
 
 **Criterios de aceptación**
 
-- [ ] El clic en **Confirmar compra** dispara el `POST` sin pasos intermedios.
-- [ ] Ante un `201`, se dispara el flujo de la Tarea 2.
-- [ ] Ante un `401`, se abre el modal de login / crear usuario.
-- [ ] Manejo de errores visible para el usuario.
-- [ ] Botón deshabilitado mientras se envía el pedido (evitar doble envío).
+- [x] Sin sesión iniciada, el clic en **Confirmar compra** abre el modal de login sin hacer el `POST`.
+- [x] Con sesión iniciada, el clic dispara el `POST` sin pasos intermedios.
+- [x] Ante un `201`, se dispara el flujo de la Tarea 2.
+- [x] Ante un `401`, se abre el modal de login / crear usuario (sin redirigir a `/login`).
+- [x] Manejo de errores visible para el usuario.
+- [x] Botón deshabilitado mientras se envía el pedido (evitar doble envío).
 
 ---
 
@@ -133,7 +135,7 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 
 **Flujo esperado**
 
-1. El usuario hace clic en **Confirmar compra** y el `POST /pedidos` devuelve **`401`** (no está logueado o la sesión venció).
+1. El usuario hace clic en **Confirmar compra** sin sesión iniciada, o el `POST /pedidos` devuelve **`401`** (la sesión venció).
 2. Se abre el **modal de login**, que incluye la opción **Crear usuario**:
    - **Iniciar sesión** → formulario de login (vista por defecto).
    - **Crear usuario** → formulario de registro.
@@ -142,14 +144,14 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 
 **Criterios de aceptación**
 
-- [x] El modal se abre cuando el `POST /pedidos` devuelve `401`.
+- [x] El modal se abre al confirmar sin sesión iniciada o cuando el `POST /pedidos` devuelve `401`.
 - [x] Modal de login con opción para pasar a "Crear usuario".
 - [x] Formulario de registro con validaciones (campos obligatorios, formato de email, contraseña de al menos 8 caracteres).
 - [x] Integración con `POST /usuarios`, enviando `{ username, name, surname, password }`.
 - [x] Mensajes de error claros, incluido email ya registrado (`409`).
-- [x] Después de loguearse o registrarse, se reintenta la compra sin perder el carrito.
+- [x] Después de loguearse o registrarse, el usuario puede volver a confirmar la compra sin perder el carrito.
 
-> 🔗 **Integración:** ante el `401`, `Cart.vue` abre el modal; al autenticarse, el carrito reintenta `POST /pedidos`.
+> 🔗 **Integración:** sin sesión o ante el `401`, `Cart.vue` abre el modal; al autenticarse, el modal se cierra y el usuario vuelve a hacer clic en **Confirmar compra**.
 
 **Integración con la Tarea 1 (ya implementada en `Cart.vue`)**
 
@@ -157,12 +159,12 @@ El modal se dispara por **store** (`src/store/auth.js`):
 
 | Qué | Cómo |
 |-----|------|
-| Abrir el modal | Ante un `401` en `POST /pedidos`, `Cart.vue` llama a `authStore.abrirLoginModal()`, que pone `authStore.loginModalAbierto` en `true`. |
+| Abrir el modal | Al confirmar sin sesión iniciada, o ante un `401` en `POST /pedidos`, `Cart.vue` llama a `authStore.abrirLoginModal()`, que pone `authStore.loginModalAbierto` en `true`. |
 | Mostrar el modal | El componente del modal se muestra con `v-if="authStore.loginModalAbierto"`. |
 | Cerrar el modal | Llamar a `authStore.cerrarLoginModal()` al cancelar y después de un login o registro exitoso (luego de `authStore.setToken(token)`). |
 | Seguir con la compra | El carrito no se toca ante el `401`, así que alcanza con que el usuario vuelva a hacer clic en **Confirmar compra**. |
 
-- Mientras el modal no exista, ante un `401` el carrito solo muestra el mensaje "Iniciá sesión para confirmar la compra. Tu carrito se conserva."
+- Ante un `401`, además de abrir el modal, el carrito muestra el mensaje "Iniciá sesión para confirmar la compra. Tu carrito se conserva.", que se borra al autenticarse.
 - El `POST /pedidos` usa `fetchWithAuth(url, { ..., redirectOn401: false })`: el token vencido se borra igual, pero no redirige a `/login`. Si el modal hace pedidos propios que puedan devolver `401`, usar la misma opción para que no lo saque de la página.
 - Opcional: reintentar la compra automáticamente después del login (por ejemplo, que `Cart.vue` observe `loginModalAbierto` y vuelva a llamar a `confirmarPedido()` cuando se cierre con sesión iniciada).
 
