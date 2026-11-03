@@ -14,7 +14,7 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 | 2 | Compra exitosa: mensaje, vaciar carrito y redirección | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 3 | Mis pedidos: listado de pedidos del usuario logueado | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 4 | Modal de login / crear usuario (ante `401`) | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
-| 5 | Admin: listado de pedidos de todos los usuarios | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
+| 5 | Admin: listado de pedidos de todos los usuarios | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
 | 6 | Admin: filtro de pedidos por usuario | ![Baja](https://img.shields.io/badge/prioridad-BAJA-28a745?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 7 | Admin: generar oferta semanal | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Sin asignar](https://img.shields.io/badge/-sin%20asignar-555555?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 8 | Home: mostrar ofertas semanales | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Sin asignar](https://img.shields.io/badge/-sin%20asignar-555555?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
@@ -170,7 +170,7 @@ El modal se dispara por **store** (`src/store/auth.js`):
 
 ---
 
-## 🔴 Tarea 5 — Admin: listado de pedidos de todos los usuarios
+## ✅ Tarea 5 — Admin: listado de pedidos de todos los usuarios
 
 | Prioridad | Responsable | Vista / archivos |
 |:---------:|:-----------:|------------------|
@@ -185,9 +185,9 @@ El modal se dispara por **store** (`src/store/auth.js`):
 
 **Criterios de aceptación**
 
-- [ ] Vista accesible solo para usuarios con rol admin.
-- [ ] Listado completo de pedidos traído del endpoint correspondiente (confirmar ruta con backend).
-- [ ] Estado de carga y mensaje cuando no hay pedidos.
+- [x] Vista accesible solo para usuarios con rol admin.
+- [x] Listado completo de pedidos traído de GET /pedidos/all (requiere rol admin).
+- [x] Estado de carga y mensaje cuando no hay pedidos.
 
 ---
 
