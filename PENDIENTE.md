@@ -63,7 +63,7 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 | Respuesta | Qué pasa |
 |:---------:|----------|
 | ![201](https://img.shields.io/badge/-201%20Created-28a745?style=flat-square) | Se pasa al flujo de **compra exitosa** (Tarea 2). |
-| ![401](https://img.shields.io/badge/-401%20Unauthorized-f9a825?style=flat-square) | El token venció o el backend lo rechazó: se borra el token y se abre el **modal de login** con la opción de **crear usuario** (Tarea 4), sin redirigir a `/login`. El carrito queda intacto. |
+| ![401](https://img.shields.io/badge/-401%20Unauthorized-f9a825?style=flat-square) | El token venció o el backend lo rechazó: se borra el token y se abre el **modal de login** con la opción de **crear usuario** (Tarea 4), sin salir del carrito. El carrito queda intacto. |
 | ![Error](https://img.shields.io/badge/-otro%20error-d73a49?style=flat-square) | Se muestra el mensaje de error y el carrito queda intacto. |
 
 **Criterios de aceptación**
@@ -71,7 +71,7 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 - [x] Sin sesión iniciada, el clic en **Confirmar compra** abre el modal de login sin hacer el `POST`.
 - [x] Con sesión iniciada, el clic dispara el `POST` sin pasos intermedios.
 - [x] Ante un `201`, se dispara el flujo de la Tarea 2.
-- [x] Ante un `401`, se abre el modal de login / crear usuario (sin redirigir a `/login`).
+- [x] Ante un `401`, se abre el modal de login / crear usuario sin salir del carrito.
 - [x] Manejo de errores visible para el usuario.
 - [x] Botón deshabilitado mientras se envía el pedido (evitar doble envío).
 
@@ -160,12 +160,12 @@ El modal se dispara por **store** (`src/store/auth.js`):
 | Qué | Cómo |
 |-----|------|
 | Abrir el modal | Al confirmar sin sesión iniciada, o ante un `401` en `POST /pedidos`, `Cart.vue` llama a `authStore.abrirLoginModal()`, que pone `authStore.loginModalAbierto` en `true`. |
-| Mostrar el modal | El componente del modal se muestra con `v-if="authStore.loginModalAbierto"`. |
+| Mostrar el modal | El modal es global: está en `App.vue` y se muestra con `authStore.loginModalAbierto`. `abrirLoginModal({ mensaje, redirect })` acepta un texto para el modal y una ruta a la que ir después de autenticarse. |
 | Cerrar el modal | Llamar a `authStore.cerrarLoginModal()` al cancelar y después de un login o registro exitoso (luego de `authStore.setToken(token)`). |
 | Seguir con la compra | El carrito no se toca ante el `401`, así que alcanza con que el usuario vuelva a hacer clic en **Confirmar compra**. |
 
 - Ante un `401`, además de abrir el modal, el carrito muestra el mensaje "Iniciá sesión para confirmar la compra. Tu carrito se conserva.", que se borra al autenticarse.
-- El `POST /pedidos` usa `fetchWithAuth(url, { ..., redirectOn401: false })`: el token vencido se borra igual, pero no redirige a `/login`. Si el modal hace pedidos propios que puedan devolver `401`, usar la misma opción para que no lo saque de la página.
+- Ya no existe la página `/login`: el modal es la única forma de iniciar sesión. Lo abren el botón **Iniciar sesión** del header, el guard de `/admin` (que después del login navega al panel) y `fetchWithAuth` ante cualquier `401`, que borra el token sin sacar al usuario de la página.
 - Opcional: reintentar la compra automáticamente después del login (por ejemplo, que `Cart.vue` observe `loginModalAbierto` y vuelva a llamar a `confirmarPedido()` cuando se cierre con sesión iniciada).
 
 ---

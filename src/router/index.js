@@ -3,7 +3,6 @@ import Home from '../views/Home.vue'
 import ProductDetail from '../views/ProductDetail.vue'
 import Catalog from '../views/Catalog.vue'
 import Dashboard from '../views/Dashboard.vue'
-import AdminLogin from '../views/AdminLogin.vue'
 import { useAuthStore } from '../store/auth.js'
 import { pinia } from '../store/pinia.js'
 import Cart from '../views/Cart.vue'
@@ -11,7 +10,6 @@ import Cart from '../views/Cart.vue'
 const routes = [
   { path: '/', component: Home, meta:{layout:"MainLayout"} },
   { path: '/product/:id', component: ProductDetail, name:"product" },
-  { path: '/login', component: AdminLogin, meta: { layout: 'NoneLayout' } },
   { path: '/admin', component: Dashboard, meta: { layout: 'AuthLayout', requireAdminLogin: true } },
   { path: '/catalog', component: Catalog, name:"catalog" },
   { path: '/cart', component: Cart, name: 'cart' },
@@ -22,7 +20,7 @@ export const router = createRouter({
   routes,
 })
 
-router.beforeEach((to) => {
+router.beforeEach((to, from) => {
   const authStore = useAuthStore(pinia)
   const requiresAdminLogin = to.matched.some((record) => record.meta.requireAdminLogin)
 
@@ -31,9 +29,13 @@ router.beforeEach((to) => {
       return '/'
     }
 
-    return {
-      path: '/login',
-      query: { redirect: to.fullPath },
-    }
+    // Sin sesión: se abre el modal y, al autenticarse como admin, se navega a la ruta pedida.
+    authStore.abrirLoginModal({
+      mensaje: 'Iniciá sesión con una cuenta de administrador.',
+      redirect: to.fullPath,
+    })
+
+    // Si es la primera navegación (URL escrita a mano), no hay página previa: se va al inicio.
+    return from.matched.length ? false : '/'
   }
 })

@@ -7,6 +7,11 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  // Texto opcional según desde dónde se abrió (carrito, panel, sesión vencida).
+  mensaje: {
+    type: String,
+    default: '',
+  },
 })
 
 const emit = defineEmits(['close', 'authenticated'])
@@ -103,9 +108,9 @@ async function enviarFormulario() {
 
       <section class="modal-card-body">
         <p class="auth-modal-intro">
-          {{ modo === 'login'
-            ? 'Iniciá sesión para continuar con la compra. Tu carrito se conserva.'
-            : 'Creá tu cuenta para continuar con la compra.' }}
+          {{ mensaje || (modo === 'login'
+            ? 'Ingresá con tu correo y contraseña.'
+            : 'Completá tus datos para crear tu cuenta.') }}
         </p>
 
         <div class="tabs is-toggle is-fullwidth auth-tabs">
@@ -127,10 +132,10 @@ async function enviarFormulario() {
           <div v-if="modo === 'registro'" class="columns is-variable is-2">
             <div class="column">
               <div class="field">
-                <label class="label" for="cart-register-name">Nombre</label>
+                <label class="label" for="auth-register-name">Nombre</label>
                 <div class="control">
                   <input
-                    id="cart-register-name"
+                    id="auth-register-name"
                     v-model="nombre"
                     class="input"
                     type="text"
@@ -143,10 +148,10 @@ async function enviarFormulario() {
 
             <div class="column">
               <div class="field">
-                <label class="label" for="cart-register-surname">Apellido</label>
+                <label class="label" for="auth-register-surname">Apellido</label>
                 <div class="control">
                   <input
-                    id="cart-register-surname"
+                    id="auth-register-surname"
                     v-model="apellido"
                     class="input"
                     type="text"
@@ -159,10 +164,10 @@ async function enviarFormulario() {
           </div>
 
           <div class="field">
-            <label class="label" for="cart-login-email">Correo electrónico</label>
+            <label class="label" for="auth-login-email">Correo electrónico</label>
             <div class="control">
               <input
-                id="cart-login-email"
+                id="auth-login-email"
                 v-model="email"
                 class="input"
                 type="email"
@@ -174,10 +179,10 @@ async function enviarFormulario() {
           </div>
 
           <div class="field">
-            <label class="label" for="cart-login-password">Contraseña</label>
+            <label class="label" for="auth-login-password">Contraseña</label>
             <div class="control">
               <input
-                id="cart-login-password"
+                id="auth-login-password"
                 v-model="password"
                 class="input"
                 type="password"
@@ -199,7 +204,7 @@ async function enviarFormulario() {
           >
             {{ cargando
               ? (modo === 'login' ? 'Ingresando…' : 'Creando cuenta…')
-              : (modo === 'login' ? 'Ingresar y continuar' : 'Crear cuenta y continuar') }}
+              : (modo === 'login' ? 'Ingresar' : 'Crear cuenta') }}
           </button>
         </form>
       </section>

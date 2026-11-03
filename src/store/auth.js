@@ -34,8 +34,11 @@ function readTokenClaims(token) {
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     token: readStoredToken(),
-    // El carrito lo abre cuando isAuthenticated es false; el modal de login lo escucha.
+    // Modal global de login (App.vue). Lo abren el header, el guard de /admin, el carrito y cualquier 401.
     loginModalAbierto: false,
+    loginModalMensaje: '',
+    // Ruta a la que se navega después de autenticarse (por ejemplo, /admin).
+    redirectDespuesLogin: '',
   }),
 
   getters: {
@@ -129,16 +132,20 @@ export const useAuthStore = defineStore('auth', {
       return data
     },
 
-    abrirLoginModal() {
+    abrirLoginModal({ mensaje = '', redirect = '' } = {}) {
+      this.loginModalMensaje = mensaje
+      this.redirectDespuesLogin = redirect
       this.loginModalAbierto = true
     },
 
     cerrarLoginModal() {
       this.loginModalAbierto = false
+      this.loginModalMensaje = ''
+      this.redirectDespuesLogin = ''
     },
 
-    // redirectOn401: false deja que la vista maneje el 401 (por ejemplo, abriendo el modal de login).
-    fetchWithAuth(input, { redirectOn401 = true, ...fetchOptions } = {}) {
+    // Ante un 401 borra el token y abre el modal de login sin salir de la página.
+    fetchWithAuth(input, fetchOptions = {}) {
       const headers = new Headers(fetchOptions.headers)
 
       if (this.token) {
@@ -149,15 +156,8 @@ export const useAuthStore = defineStore('auth', {
         if (response.status === 401) {
           this.logout()
 
-          if (
-            redirectOn401 &&
-            typeof window !== 'undefined' &&
-            window.location.pathname !== '/login'
-          ) {
-            const returnUrl = `${window.location.pathname}${window.location.search}${window.location.hash}`
-            const loginUrl = new URL('/login', window.location.origin)
-            loginUrl.searchParams.set('redirect', returnUrl)
-            window.location.assign(loginUrl)
+          if (!this.loginModalAbierto) {
+            this.abrirLoginModal({ mensaje: 'Tu sesión venció. Iniciá sesión de nuevo.' })
           }
         }
 

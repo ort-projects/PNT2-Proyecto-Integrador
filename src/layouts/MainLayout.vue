@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '../store/auth.js'
 import { useCatalogStore } from '../store/catalog.js'
 import { useCartStore } from '../store/cart.js'
@@ -8,7 +8,6 @@ import { useCartStore } from '../store/cart.js'
 const authStore = useAuthStore()
 const catalogStore = useCatalogStore()
 const cartStore = useCartStore()
-const route = useRoute()
 const router = useRouter()
 const cantidadEnCarrito = computed(() =>
   cartStore.items.reduce((total, item) => total + item.cantidad, 0),
@@ -104,13 +103,14 @@ function buscarProductos() {
         </button>
       </template>
 
-      <RouterLink
+      <button
         v-else
-        :to="{ path: '/login', query: { redirect: route.fullPath } }"
+        type="button"
         class="account-link"
+        @click="authStore.abrirLoginModal()"
       >
         Iniciar sesión
-      </RouterLink>
+      </button>
     </div>
   </details>
 </div>

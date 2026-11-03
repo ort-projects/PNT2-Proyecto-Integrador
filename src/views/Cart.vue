@@ -1,8 +1,9 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useAuthStore } from '../store/auth.js'
 import { useCartStore } from '../store/cart.js'
-import AuthModal from '../components/AuthModal.vue'
+
+const MENSAJE_LOGIN_COMPRA = 'Iniciá sesión para continuar con la compra. Tu carrito se conserva.'
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
@@ -104,7 +105,6 @@ async function enviarPedido() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ items }),
-      redirectOn401: false,
     },
   )
 
@@ -135,7 +135,7 @@ async function confirmarPedido() {
   toastPedido.value = ''
 
   if (!authStore.isAuthenticated) {
-    authStore.abrirLoginModal()
+    authStore.abrirLoginModal({ mensaje: MENSAJE_LOGIN_COMPRA })
     return
   }
 
@@ -149,7 +149,7 @@ async function confirmarPedido() {
     if (err?.status === 401) {
       errorPedido.value =
         'Iniciá sesión para confirmar la compra. Tu carrito se conserva.'
-      authStore.abrirLoginModal()
+      authStore.abrirLoginModal({ mensaje: MENSAJE_LOGIN_COMPRA })
     } else if (err?.status === 404) {
       mostrarToast(`${err.message} El carrito se conserva.`)
     } else {
@@ -161,21 +161,18 @@ async function confirmarPedido() {
   }
 }
 
-function continuarCompraAutenticada() {
-  errorPedido.value = ''
-  authStore.cerrarLoginModal()
-}
+// Al iniciar sesión desde el modal global se borra el aviso de "Iniciá sesión…".
+watch(
+  () => authStore.isAuthenticated,
+  (autenticado) => {
+    if (autenticado) errorPedido.value = ''
+  },
+)
 
 </script>
 
 <template>
   <section class="section">
-    <AuthModal
-  :open="authStore.loginModalAbierto"
-  @close="authStore.cerrarLoginModal()"
-  @authenticated="continuarCompraAutenticada"
-/>
-
     <div v-if="toastPedido" class="cart-toast" role="alert" aria-live="assertive">
       <span>{{ toastPedido }}</span>
       <button
