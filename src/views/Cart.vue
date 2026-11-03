@@ -1,5 +1,6 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useAuthStore } from '../store/auth.js'
 import { useCartStore } from '../store/cart.js'
 
@@ -7,6 +8,7 @@ const MENSAJE_LOGIN_COMPRA = 'Iniciá sesión para continuar con la compra. Tu c
 
 const authStore = useAuthStore()
 const cartStore = useCartStore()
+const router = useRouter()
 
 const productos = ref([])
 const cargando = ref(false)
@@ -124,8 +126,11 @@ async function enviarPedido() {
 }
 
 // Flujo de compra exitosa (Tarea 2): mensaje, vaciar carrito y redirección a "Mis pedidos".
-function compraExitosa() {
+// El carrito se vacía antes de navegar para que no se pueda reenviar el mismo pedido.
+// El mensaje de éxito lo muestra "Mis pedidos" a partir del state de la navegación.
+async function compraExitosa() {
   cartStore.vaciarCarrito()
+  await router.push({ name: 'mis-pedidos', state: { pedidoRegistrado: true } })
 }
 
 async function confirmarPedido() {
@@ -143,7 +148,7 @@ async function confirmarPedido() {
 
   try {
     await enviarPedido()
-    compraExitosa()
+    await compraExitosa()
   } catch (err) {
     // 401 con token vencido: fetchWithAuth ya borró el token; el carrito se conserva.
     if (err?.status === 401) {

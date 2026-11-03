@@ -86,6 +86,10 @@ function buscarProductos() {
 
     <div class="account-dropdown">
       <template v-if="authStore.isAuthenticated">
+        <RouterLink to="/mis-pedidos" class="account-link">
+          Mis pedidos
+        </RouterLink>
+
         <RouterLink
           v-if="authStore.isAdmin"
           to="/admin"
