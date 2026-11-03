@@ -6,6 +6,7 @@ import Dashboard from '../views/Dashboard.vue'
 import { useAuthStore } from '../store/auth.js'
 import { pinia } from '../store/pinia.js'
 import Cart from '../views/Cart.vue'
+import MisPedidos from '../views/MisPedidos.vue'
 
 const routes = [
   { path: '/', component: Home, meta:{layout:"MainLayout"} },
@@ -13,6 +14,7 @@ const routes = [
   { path: '/admin', component: Dashboard, meta: { layout: 'AuthLayout', requireAdminLogin: true } },
   { path: '/catalog', component: Catalog, name:"catalog" },
   { path: '/cart', component: Cart, name: 'cart' },
+  { path: '/mis-pedidos', component: MisPedidos, name: 'mis-pedidos' },
 ]
 
 export const router = createRouter({

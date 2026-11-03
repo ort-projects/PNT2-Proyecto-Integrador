@@ -11,7 +11,7 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 | # | Tarea | Prioridad | Responsable | Estado |
 |:-:|-------|:---------:|:-----------:|:------:|
 | 1 | Confirmar compra (`POST /pedidos`) | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
-| 2 | Compra exitosa: mensaje, vaciar carrito y redirección | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
+| 2 | Compra exitosa: mensaje, vaciar carrito y redirección | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
 | 3 | Mis pedidos: listado de pedidos del usuario logueado | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 4 | Modal de login / crear usuario (ante `401`) | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
 | 5 | Admin: listado de pedidos de todos los usuarios | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
@@ -77,7 +77,7 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 
 ---
 
-## 🔴 Tarea 2 — Compra exitosa
+## ✅ Tarea 2 — Compra exitosa
 
 | Prioridad | Responsable | Vista / archivos |
 |:---------:|:-----------:|------------------|
@@ -94,11 +94,16 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 
 **Criterios de aceptación**
 
-- [ ] Mensaje de éxito visible solo cuando la respuesta es `201`.
-- [ ] El carrito queda vacío después de la compra.
-- [ ] Redirección automática al listado de pedidos del usuario (vista de la Tarea 3).
+- [x] Mensaje de éxito visible solo cuando la respuesta es `201`.
+- [x] El carrito queda vacío después de la compra.
+- [x] Redirección automática al listado de pedidos del usuario (vista de la Tarea 3).
 
-> 🔗 **Depende de:** Tarea 3. La vista de destino todavía no existe.
+> 🔗 **Depende de:** Tarea 3. La ruta `/mis-pedidos` (`src/views/MisPedidos.vue`) ya existe y muestra el mensaje de éxito; falta el listado de pedidos.
+
+**Implementación**
+
+- `compraExitosa()` en `Cart.vue` vacía el carrito y navega con `router.push({ name: 'mis-pedidos', state: { pedidoRegistrado: true } })`. El carrito se vacía antes de navegar para que no se pueda reenviar el mismo pedido.
+- `MisPedidos.vue` lee `history.state.pedidoRegistrado` para mostrar "¡Pedido registrado!" y lo borra para que el mensaje no reaparezca al recargar.
 
 ---
 
