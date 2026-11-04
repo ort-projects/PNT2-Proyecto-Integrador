@@ -16,8 +16,13 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 | 4 | Modal de login / crear usuario (ante `401`) | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
 | 5 | Admin: listado de pedidos de todos los usuarios | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
 | 6 | Admin: filtro de pedidos por usuario | ![Baja](https://img.shields.io/badge/prioridad-BAJA-28a745?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
-| 7 | Admin: generar oferta semanal | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Sin asignar](https://img.shields.io/badge/-sin%20asignar-555555?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
-| 8 | Home: mostrar ofertas semanales | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Sin asignar](https://img.shields.io/badge/-sin%20asignar-555555?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
+| 7 | Admin: generar oferta semanal | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Gonza](https://img.shields.io/badge/-Gonza-2da44e?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
+| 8 | Home: mostrar ofertas semanales | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Gonza](https://img.shields.io/badge/-Gonza-2da44e?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
+| 9 | Mejorar la UI del modal de login | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
+| 10 | Admin: hacer funcionar el filtro de pedidos por estado | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
+| 11 | Mejorar la paleta de colores y los botones del sitio | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
+| 12 | Acceso al catálogo: link en el header y "Ver todos" en Home | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
+| 13 | Admin: paginar el listado de pedidos | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 
 ### Referencias
 
@@ -38,10 +43,9 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 
 | Persona | Tareas asignadas |
 |---------|------------------|
-| 🔵 **Gabriel** | #1, #2, #3 |
-| 🟣 **Dana** | #4, #5, #6 |
-| 🟢 **Gonza** | _a definir_ |
-| ⚪ **Sin asignar** | #7, #8 |
+| 🔵 **Gabriel** | #1, #2, #3, #12 |
+| 🟣 **Dana** | #4, #5, #6, #9, #10, #11, #13 |
+| 🟢 **Gonza** | #7, #8 |
 
 ---
 
@@ -117,7 +121,7 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 
 **Requisitos**
 
-- Proteger la ruta `/mis-pedidos` para usuarios logueados (hoy no tiene `meta` ni guard en `src/router/index.js`).
+- Proteger la ruta `/mis-pedidos` para usuarios logueados.
 - Traer los pedidos con `GET /pedidos` (con `fetchWithAuth`). El backend ya devuelve cada pedido con `id`, `date`, `total`, `user` e ítems con `title`, `thumbnail`, `price` y `quantity` (B2 del backend).
 - Mostrarlos en una tabla o listado: número de pedido, fecha, productos, total y estado.
 
@@ -189,7 +193,7 @@ El modal se dispara por **store** (`src/store/auth.js`):
 
 | Prioridad | Responsable | Vista / archivos |
 |:---------:|:-----------:|------------------|
-| ![Alta](https://img.shields.io/badge/-ALTA-d73a49?style=flat-square) | 🟣 Dana | Panel de admin (`src/views/Dashboard.vue` o vista nueva) |
+| ![Alta](https://img.shields.io/badge/-ALTA-d73a49?style=flat-square) | 🟣 Dana | `src/views/Dashboard.vue` |
 
 **Objetivo:** que el administrador vea todos los pedidos realizados en el sistema.
 
@@ -200,11 +204,17 @@ El modal se dispara por **store** (`src/store/auth.js`):
 
 **Criterios de aceptación**
 
-- [ ] Vista accesible solo para usuarios con rol admin.
-- [ ] Listado completo de pedidos traído de `GET /pedidos/all` (requiere token de admin; ya devuelve detalle, `total` y usuario con `username`, `name` y `surname`).
-- [ ] Estado de carga y mensaje cuando no hay pedidos.
+- [x] Vista accesible solo para usuarios con rol admin.
+- [x] Listado completo de pedidos traído de `GET /pedidos/all` (requiere token de admin; ya devuelve detalle, `total` y usuario con `username`, `name` y `surname`).
+- [x] Estado de carga y mensaje cuando no hay pedidos.
 
 > 🔗 **Backend:** B3 ya devuelve `status` (`pendiente`, `enviado`, `entregado`, `cancelado`) también en `GET /pedidos/all`.
+
+**Implementación**
+
+- La tabla **Pedidos de todos los usuarios** está al final de `Dashboard.vue` (ruta `/admin`, protegida con `meta: { requireAdminLogin: true }`). Muestra número, usuario (nombre y apellido, con el `username` debajo), fecha, total y estado.
+- `GET /pedidos/all` se pide con `fetchWithAuth` junto con `GET /admin/dashboard`; el botón **Actualizar** y volver a la pestaña recargan ambos.
+- Extra: hay un **filtro por estado** con los estados presentes en los pedidos y un mensaje cuando ningún pedido tiene el estado elegido.
 
 ---
 
@@ -212,7 +222,7 @@ El modal se dispara por **store** (`src/store/auth.js`):
 
 | Prioridad | Responsable | Vista / archivos |
 |:---------:|:-----------:|------------------|
-| ![Baja](https://img.shields.io/badge/-BAJA-28a745?style=flat-square) | 🟣 Dana | Vista de pedidos del admin (Tarea 5) |
+| ![Baja](https://img.shields.io/badge/-BAJA-28a745?style=flat-square) | 🟣 Dana | `src/views/Dashboard.vue` (tabla de la Tarea 5) |
 
 **Objetivo:** que el administrador pueda ver solo los pedidos de un usuario determinado.
 
@@ -227,17 +237,17 @@ El modal se dispara por **store** (`src/store/auth.js`):
 - [ ] Se puede quitar el filtro y volver al listado completo.
 - [ ] Mensaje cuando el usuario elegido no tiene pedidos.
 
-> 🔗 **Depende de:** Tarea 5.
+> 🔗 **Depende de:** Tarea 5 (hecha). La tabla ya tiene un filtro por **estado** (`estadoSeleccionado` / `pedidosFiltrados`); el filtro por usuario se puede sumar al mismo `computed`.
 
 > 💡 **Backend:** el filtro `GET /pedidos/all?username=` (B6) todavía no existe. Mientras tanto se puede filtrar del lado del cliente con los datos de la Tarea 5. Para armar el selector con la lista de usuarios se usa `GET /usuarios`, que ya no devuelve contraseñas pero todavía no está protegido para admin (B5).
 
 ---
 
-## ⚪ Tarea 7 — Admin: generar oferta semanal
+## 🟢 Tarea 7 — Admin: generar oferta semanal
 
 | Prioridad | Responsable | Vista / archivos |
 |:---------:|:-----------:|------------------|
-| ![A definir](https://img.shields.io/badge/-A%20DEFINIR-lightgrey?style=flat-square) | ⚪ Sin asignar | Panel de admin (vista nueva) |
+| ![A definir](https://img.shields.io/badge/-A%20DEFINIR-lightgrey?style=flat-square) | 🟢 Gonza | Panel de admin (`src/views/Dashboard.vue` o vista nueva) |
 
 **Objetivo:** que el administrador pueda armar las ofertas de la semana aplicando un descuento a productos puntuales.
 
@@ -258,13 +268,15 @@ El modal se dispara por **store** (`src/store/auth.js`):
 
 > ❓ **A definir con backend:** ruta y payload del endpoint, vigencia de la oferta (¿semana calendario o fechas de inicio/fin?) y si un producto puede tener más de una oferta activa.
 
+> 💡 **Punto de partida en el código:** `Dashboard.vue` ya tiene la tarjeta de **candidatos a promoción** (los 3 productos con menos unidades vendidas en el año), con un botón para marcar el producto como destacado (`PATCH /admin/productos/:id` con `{ destacado }`). Se puede reutilizar ese patrón para guardar el descuento o abrir el formulario de oferta desde ahí.
+
 ---
 
-## ⚪ Tarea 8 — Home: mostrar ofertas semanales
+## 🟢 Tarea 8 — Home: mostrar ofertas semanales
 
 | Prioridad | Responsable | Vista / archivos |
 |:---------:|:-----------:|------------------|
-| ![A definir](https://img.shields.io/badge/-A%20DEFINIR-lightgrey?style=flat-square) | ⚪ Sin asignar | `src/views/Home.vue` |
+| ![A definir](https://img.shields.io/badge/-A%20DEFINIR-lightgrey?style=flat-square) | 🟢 Gonza | `src/views/Home.vue` |
 
 **Objetivo:** que los usuarios vean en la página principal los productos en oferta de la semana.
 
@@ -281,6 +293,132 @@ El modal se dispara por **store** (`src/store/auth.js`):
 - [ ] Si no hay ofertas, la sección no se muestra (o muestra un mensaje).
 
 > 🔗 **Depende de:** Tarea 7.
+
+> ⚠️ **Estado actual:** `Home.vue` ya tiene una sección **"Ofertas del dia"**, pero es un placeholder: muestra `productos.slice(5, 10)` de `GET /productos` sin descuento. Hay que reemplazarla por las ofertas reales. La sección **Productos destacados** (filtra por `producto.destacado`) sí funciona y no es parte de esta tarea.
+
+---
+
+## 🟣 Tarea 9 — Mejorar la UI del modal de login
+
+| Prioridad | Responsable | Vista / archivos |
+|:---------:|:-----------:|------------------|
+| ![A definir](https://img.shields.io/badge/-A%20DEFINIR-lightgrey?style=flat-square) | 🟣 Dana | `src/components/AuthModal.vue` |
+
+**Objetivo:** que el modal de login / crear usuario (Tarea 4) se vea prolijo y coherente con el resto del sitio.
+
+**Requisitos**
+
+- Revisar el diseño del modal: espaciados, tipografía, jerarquía del título y alineación de los campos.
+- Que el paso entre **Iniciar sesión** y **Crear usuario** sea claro (por ejemplo, pestañas o un link bien visible).
+- Usar los colores y estilos de botones del sitio (ver Tarea 11).
+
+**Criterios de aceptación**
+
+- [ ] El modal se ve bien en escritorio y en celular.
+- [ ] Los mensajes de error y de validación se distinguen bien y quedan junto al campo que corresponde.
+- [ ] Los botones muestran el estado de carga mientras se envía el formulario.
+- [ ] No se rompe nada del flujo de la Tarea 4 (abrir, cerrar, login, registro y `redirect`).
+
+---
+
+## 🟣 Tarea 10 — Admin: hacer funcionar el filtro de pedidos por estado
+
+| Prioridad | Responsable | Vista / archivos |
+|:---------:|:-----------:|------------------|
+| ![A definir](https://img.shields.io/badge/-A%20DEFINIR-lightgrey?style=flat-square) | 🟣 Dana | `src/views/Dashboard.vue` |
+
+**Objetivo:** que el administrador pueda filtrar de forma confiable la tabla de pedidos de la Tarea 5 por estado.
+
+**Requisitos**
+
+- Revisar el selector **Estado** que ya está sobre la tabla de pedidos (`estadoSeleccionado` y `pedidosFiltrados` en `Dashboard.vue`) y corregir lo que no funcione.
+- Hoy las opciones salen de los estados presentes en los pedidos cargados (`estadosDisponibles`); ofrecer siempre los cuatro estados del backend: `pendiente`, `enviado`, `entregado` y `cancelado`.
+- Mostrar el estado con la misma etiqueta de color que en **Mis pedidos** (`MisPedidos.vue` ya tiene el mapa `estados`).
+
+**Criterios de aceptación**
+
+- [ ] Al elegir un estado, la tabla muestra solo los pedidos con ese estado.
+- [ ] La opción **Todos** vuelve al listado completo.
+- [ ] Mensaje cuando no hay pedidos con el estado elegido.
+- [ ] El filtro sigue funcionando después de **Actualizar** el panel.
+- [ ] Se puede combinar con el filtro por usuario (Tarea 6).
+
+---
+
+## 🟣 Tarea 11 — Mejorar la paleta de colores y los botones del sitio
+
+| Prioridad | Responsable | Vista / archivos |
+|:---------:|:-----------:|------------------|
+| ![A definir](https://img.shields.io/badge/-A%20DEFINIR-lightgrey?style=flat-square) | 🟣 Dana | `src/style.css`, layouts y vistas |
+
+**Objetivo:** que el sitio tenga una paleta de colores y un estilo de botones consistentes en todas las vistas.
+
+**Requisitos**
+
+- Revisar y ajustar las variables de color de `src/style.css` (`--color-fondo`, `--color-superficie`, `--color-texto`, `--color-secundario`, `--color-pistacho`, `--color-borde`, etc.).
+- Definir pocos estilos de botón (principal, secundario, peligro) y usarlos en todo el sitio: header, carrito, detalle de producto, Mis pedidos, panel de admin y modal de login.
+- Sacar los colores escritos a mano en las vistas y usar las variables (por ejemplo, los de los gráficos de `Dashboard.vue`).
+
+**Criterios de aceptación**
+
+- [ ] Todos los colores salen de las variables de `src/style.css`.
+- [ ] Los botones del mismo tipo se ven igual en todas las vistas, incluidos los estados hover, deshabilitado y cargando.
+- [ ] Buen contraste entre texto y fondo.
+
+---
+
+## 🔵 Tarea 12 — Acceso al catálogo
+
+| Prioridad | Responsable | Vista / archivos |
+|:---------:|:-----------:|------------------|
+| ![A definir](https://img.shields.io/badge/-A%20DEFINIR-lightgrey?style=flat-square) | 🔵 Gabriel | `src/layouts/MainLayout.vue`, `src/views/Home.vue` |
+
+**Objetivo:** que el usuario pueda llegar al listado completo de productos sin tener que buscar.
+
+**Situación actual**
+
+- La página `/catalog` (`src/views/Catalog.vue`, ruta `name: 'catalog'`) ya lista todos los productos de `GET /productos` y filtra por `?busqueda=`.
+- No hay ningún link a esa página: solo se llega enviando el buscador del header (vacío muestra todo) o escribiendo la URL.
+
+**Requisitos**
+
+- Agregar en el header un link **Productos** (o **Catálogo**) a `/catalog`.
+- Agregar en Home un botón **Ver todos los productos** debajo de los carruseles.
+- El link del header no debe arrastrar una búsqueda anterior: al entrar desde ahí se ven todos los productos.
+
+**Criterios de aceptación**
+
+- [ ] Link al catálogo visible en el header, también en celular.
+- [ ] Botón **Ver todos los productos** en Home que lleva a `/catalog`.
+- [ ] Al entrar desde el link o el botón se muestran todos los productos, sin filtro.
+- [ ] El buscador del header sigue funcionando como hasta ahora.
+
+---
+
+## 🟣 Tarea 13 — Admin: paginar el listado de pedidos
+
+| Prioridad | Responsable | Vista / archivos |
+|:---------:|:-----------:|------------------|
+| ![A definir](https://img.shields.io/badge/-A%20DEFINIR-lightgrey?style=flat-square) | 🟣 Dana | `src/views/Dashboard.vue` (tabla de la Tarea 5) |
+
+**Objetivo:** que la tabla de pedidos del admin no muestre todos los pedidos de una vez, sino de a páginas.
+
+**Requisitos**
+
+- Mostrar una cantidad fija de pedidos por página (por ejemplo, 10).
+- Controles de paginación debajo de la tabla: anterior, siguiente y número de página.
+- La paginación se aplica sobre el listado ya filtrado (`pedidosFiltrados`), así que funciona junto con los filtros por estado (Tarea 10) y por usuario (Tarea 6).
+
+**Criterios de aceptación**
+
+- [ ] La tabla muestra como máximo la cantidad de pedidos por página definida.
+- [ ] Se puede ir a la página anterior y a la siguiente; los botones se deshabilitan en la primera y la última página.
+- [ ] Se indica la página actual y el total de páginas (por ejemplo, "Página 2 de 5").
+- [ ] Al cambiar un filtro se vuelve a la página 1.
+- [ ] El contador de pedidos sigue mostrando el total filtrado, no solo los de la página.
+- [ ] Si hay una sola página, los controles no se muestran.
+
+> 💡 **Backend:** el panel pide `GET /pedidos/all` sin parámetros y recibe todos los pedidos de una vez, así que se puede paginar del lado del cliente. Si el volumen crece, se puede pedir al backend `?page=` y `?limit=`.
 
 ---
 
