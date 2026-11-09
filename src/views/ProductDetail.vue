@@ -104,7 +104,7 @@ onMounted(cargarProducto)
 
           <h1 class="title is-2 mb-2">{{ product.nombre }}</h1>
 
-          <p class="subtitle is-4 has-text-primary has-text-weight-bold mb-4">
+          <p class="subtitle is-4 product-price has-text-weight-bold mb-4">
             ${{ product.precio }}
           </p>
 
@@ -113,37 +113,40 @@ onMounted(cargarProducto)
           </div>
 
           <div class="purchase-controls">
-            <label class="quantity-label" for="product-quantity">Cantidad</label>
-            <div class="quantity-counter" aria-label="Seleccionar cantidad">
-              <button
-                type="button"
-                class="quantity-button"
-                aria-label="Quitar una unidad"
-                :disabled="cantidadSeleccionada <= 1"
-                @click="cambiarCantidad(-1)"
-              >
-                −
-              </button>
-              <output id="product-quantity" class="quantity-value" aria-live="polite">
-                {{ cantidadSeleccionada }}
-              </output>
-              <button
-                type="button"
-                class="quantity-button"
-                aria-label="Agregar una unidad a la cantidad"
-                @click="cambiarCantidad(1)"
-              >
-                +
-              </button>
+            <div class="quantity-row">
+              <label class="quantity-label" for="product-quantity">Cantidad</label>
+              <div class="quantity-counter" aria-label="Seleccionar cantidad">
+                <button
+                  type="button"
+                  class="quantity-button"
+                  aria-label="Quitar una unidad"
+                  :disabled="cantidadSeleccionada <= 1"
+                  @click="cambiarCantidad(-1)"
+                >
+                  −
+                </button>
+                <output id="product-quantity" class="quantity-value" aria-live="polite">
+                  {{ cantidadSeleccionada }}
+                </output>
+                <button
+                  type="button"
+                  class="quantity-button"
+                  aria-label="Agregar una unidad a la cantidad"
+                  @click="cambiarCantidad(1)"
+                >
+                  +
+                </button>
+              </div>
             </div>
 
             <button
               type="button"
-              class="button is-primary is-medium add-to-cart"
+              class="button is-secondary is-medium add-to-cart"
               aria-label="Agregar al carrito"
               title="Agregar al carrito"
               @click="agregarAlCarrito"
             >
+              <span>Agregar al carrito</span>
               <svg aria-hidden="true" viewBox="0 0 24 24" class="add-to-cart-icon">
                 <path d="M3 4h2l2.2 11.2a2 2 0 0 0 2 1.6h8.9a2 2 0 0 0 1.9-1.5L22 8H6" />
                 <circle cx="10" cy="20" r="1" />
@@ -163,6 +166,18 @@ onMounted(cargarProducto)
 </template>
 
 <style scoped>
+.product-price {
+  color: var(--color-azul-noche);
+  font-family: var(--font-titulos);
+}
+
+.breadcrumb a {
+  color: var(--color-azul-noche);
+}
+
+.breadcrumb a:hover {
+  color: var(--color-azul-lavanda);
+}
 .overflow-hidden {
   overflow: hidden;
   border-radius: 8px;
@@ -176,13 +191,21 @@ onMounted(cargarProducto)
 
 .purchase-controls {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.75rem;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  max-width: 22rem;
   margin-top: 1.5rem;
 }
 
+.quantity-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .quantity-label {
+  font-family: var(--font-titulos);
   font-weight: 600;
 }
 
@@ -190,7 +213,9 @@ onMounted(cargarProducto)
   display: inline-flex;
   min-height: 2.75rem;
   align-items: center;
+  overflow: hidden;
   border: 1px solid var(--color-borde);
+  border-radius: var(--radio-control);
   background: var(--color-superficie);
 }
 
@@ -206,7 +231,7 @@ onMounted(cargarProducto)
 }
 
 .quantity-button:hover:not(:disabled) {
-  background: var(--color-pistacho);
+  background: var(--color-acento);
 }
 
 .quantity-button:disabled {
@@ -221,9 +246,23 @@ onMounted(cargarProducto)
 }
 
 .add-to-cart {
-  flex: 0 0 3.5rem;
+  display: inline-flex;
+  width: 100%;
+  max-width: 22rem;
   min-height: 3.5rem;
-  padding: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0 1.25rem;
+  border-color: var(--color-azul-noche);
+  background: var(--color-azul-noche);
+  color: var(--color-acento);
+}
+
+.add-to-cart:hover:not(:disabled) {
+  border-color: var(--color-azul-carbon);
+  background: var(--color-azul-carbon);
+  color: var(--color-acento);
 }
 
 .add-to-cart-icon {

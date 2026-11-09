@@ -178,7 +178,7 @@ watch(
 
 <template>
   <section class="section">
-    <div v-if="toastPedido" class="cart-toast" role="alert" aria-live="assertive">
+    <div v-if="toastPedido" class="notification is-danger is-light cart-toast is-toast" role="alert" aria-live="assertive">
       <span>{{ toastPedido }}</span>
       <button
         type="button"
@@ -284,7 +284,7 @@ watch(
               <strong>${{ totalCarrito.toFixed(2) }}</strong>
             </p>
 
-            <RouterLink to="/catalog" class="button is-outlined">
+            <RouterLink to="/catalog" class="button is-secondary">
               Seguir comprando
             </RouterLink>
 
@@ -318,11 +318,11 @@ watch(
   gap: 1rem;
   width: min(28rem, calc(100vw - 2.5rem));
   padding: 1rem 1.25rem;
-  border-left: 5px solid #b42335;
-  border-radius: 0.5rem;
-  background: #fff0f1;
-  box-shadow: 0 0.5rem 1.5rem rgb(0 0 0 / 18%);
-  color: #7f1d2d;
+  border-left: 5px solid var(--color-estado-error-texto);
+  border-radius: var(--radio-control);
+
+
+
 }
 
 .cart-toast-close {
@@ -395,7 +395,7 @@ watch(
 }
 
 .quantity-control button:hover:not(:disabled) {
-  background: var(--color-pistacho);
+  background: var(--color-acento);
 }
 
 .quantity-control button:disabled {
@@ -425,7 +425,7 @@ watch(
 
 .cart-item-subtotal strong,
 .cart-total strong {
-  color: #566c50;
+  color: var(--color-azul-noche);
 }
 
 .cart-total {

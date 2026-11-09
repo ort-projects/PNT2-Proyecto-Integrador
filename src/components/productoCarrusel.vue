@@ -104,7 +104,7 @@ function desplazar(direccion) {
 }
 
 .carousel-arrow:hover {
-  background: var(--color-pistacho);
+  background: var(--color-acento);
   transform: scale(1.05);
 }
 

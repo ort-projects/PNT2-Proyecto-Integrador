@@ -346,19 +346,31 @@ const productosMasVendidos = computed(() =>
     .slice(0, 8),
 )
 
+function obtenerColorDeTema(nombre) {
+  return getComputedStyle(document.documentElement).getPropertyValue(nombre).trim()
+}
+
+const coloresGrafico = {
+  serie: obtenerColorDeTema('--color-grafico-serie'),
+  relleno: obtenerColorDeTema('--color-grafico-relleno'),
+  destacado: obtenerColorDeTema('--color-grafico-destacado'),
+  superficie: obtenerColorDeTema('--color-grafico-superficie'),
+  rejilla: obtenerColorDeTema('--color-grafico-rejilla'),
+  texto: obtenerColorDeTema('--color-secundario'),
+}
 const datosMensuales = computed(() => ({
   labels: nombresMeses,
   datasets: [
     {
       label: 'Pedidos',
       data: resumenMensual.value.map((mes) => mes.pedidos),
-      borderColor: '#718453',
-      backgroundColor: 'rgba(168, 185, 135, 0.22)',
+      borderColor: coloresGrafico.serie,
+      backgroundColor: coloresGrafico.relleno,
       borderWidth: 2.5,
       pointRadius: 3,
       pointHoverRadius: 7,
-      pointBackgroundColor: '#718453',
-      pointBorderColor: '#faf7ef',
+      pointBackgroundColor: coloresGrafico.serie,
+      pointBorderColor: coloresGrafico.superficie,
       pointBorderWidth: 2,
       tension: 0.35,
       fill: true,
@@ -373,7 +385,7 @@ const datosDias = computed(() => ({
       label: 'Unidades vendidas',
       data: ventasPorDia.value.map((dia) => dia.unidades),
       backgroundColor: nombresDias.map((_, index) =>
-        index === menorDia.value ? '#d39b63' : '#a8b987',
+        index === menorDia.value ? coloresGrafico.destacado : coloresGrafico.serie,
       ),
       borderRadius: 5,
       maxBarThickness: 48,
@@ -387,7 +399,7 @@ const datosProductos = computed(() => ({
     {
       label: 'Unidades',
       data: productosMasVendidos.value.map((producto) => producto.unidades),
-      backgroundColor: '#8b9b68',
+      backgroundColor: coloresGrafico.serie,
       borderRadius: 5,
       maxBarThickness: 28,
     },
@@ -407,11 +419,11 @@ const opcionesLinea = {
     },
   },
   scales: {
-    x: { grid: { display: false } },
+    x: { grid: { display: false }, ticks: { color: coloresGrafico.texto } },
     y: {
       beginAtZero: true,
-      ticks: { precision: 0 },
-      grid: { color: 'rgba(113, 109, 98, 0.12)' },
+      ticks: { precision: 0, color: coloresGrafico.texto },
+      grid: { color: coloresGrafico.rejilla },
     },
   },
 }
@@ -434,10 +446,10 @@ const opcionesBarrasHorizontales = {
   scales: {
     x: {
       beginAtZero: true,
-      ticks: { precision: 0 },
-      grid: { color: 'rgba(113, 109, 98, 0.12)' },
+      ticks: { precision: 0, color: coloresGrafico.texto },
+      grid: { color: coloresGrafico.rejilla },
     },
-    y: { grid: { display: false } },
+    y: { grid: { display: false }, ticks: { color: coloresGrafico.texto } },
   },
 }
 
@@ -572,6 +584,25 @@ function nombreUsuario(usuario) {
   return nombre || usuario?.username || 'Usuario'
 }
 
+const clasesEstadoPedido = {
+  pendiente: 'is-warning estado-pedido--pendiente-pago',
+  pendiente_pago: 'is-warning estado-pedido--pendiente-pago',
+  pagado: 'is-success estado-pedido--pagado',
+  en_preparacion: 'is-info estado-pedido--en-preparacion',
+  enviado: 'is-info estado-pedido--enviado',
+  entregado: 'is-success estado-pedido--entregado',
+  cancelado: 'is-danger estado-pedido--cancelado',
+  reembolsado: 'is-light estado-pedido--reembolsado',
+}
+
+function claseEstadoPedido(estado) {
+  const normalizado = String(estado ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '_')
+
+  return clasesEstadoPedido[normalizado] ?? ''
+}
 const pedidosParaMostrar = computed(() =>
   pedidosFiltrados.value.map((pedido) => ({
     ...pedido,
@@ -579,6 +610,7 @@ const pedidosParaMostrar = computed(() =>
     fechaVisible: formatearFechaPedido(pedido.date),
     totalVisible: formatearTotal(pedido.total),
     estadoVisible: nombresEstado(pedido.status),
+    claseEstado: claseEstadoPedido(pedido.status),
   })),
 )
 </script>
@@ -596,7 +628,7 @@ const pedidosParaMostrar = computed(() =>
         </div>
 
         <button
-          class="button is-outlined"
+          class="button is-secondary"
           type="button"
           :disabled="cargandoDashboard || cargandoPedidos"
           @click="actualizarPanel"
@@ -663,7 +695,7 @@ const pedidosParaMostrar = computed(() =>
             </article>
           </div>
           <div class="column is-half-tablet is-one-quarter-desktop">
-            <article class="box summary-card pistachio-card">
+            <article class="box summary-card">
               <p class="summary-label">Unidades</p>
               <p class="summary-value">{{ totalUnidades }}</p>
               <p class="summary-note">Prendas incluidas en los pedidos</p>
@@ -950,7 +982,7 @@ const pedidosParaMostrar = computed(() =>
                 <td>{{ pedido.fechaVisible }}</td>
                 <td>{{ pedido.totalVisible }}</td>
                 <td>
-                  <span class="tag is-light">
+                  <span class="tag is-light" :class="pedido.claseEstado">
                     {{ pedido.estadoVisible }}
                   </span>
                 </td>
@@ -1000,15 +1032,12 @@ const pedidosParaMostrar = computed(() =>
   border: 1px solid var(--color-borde);
 }
 
-.pistachio-card {
-  background: #e7edda;
-}
 
 .summary-value {
   margin: 0.35rem 0;
   color: var(--color-texto);
   font-size: 2rem;
-  font-weight: 750;
+  font-weight: 700;
   line-height: 1.1;
 }
 
@@ -1040,9 +1069,6 @@ const pedidosParaMostrar = computed(() =>
   margin-top: 1.25rem;
 }
 
-.recommendation-card {
-  background: #f7f4e9;
-}
 
 .chart-card .title,
 .recommendation-card .title {
@@ -1171,13 +1197,13 @@ const pedidosParaMostrar = computed(() =>
 }
 
 .featured-button[aria-pressed='true'] {
-  background: #e7edda;
-  border-color: #a8b987;
+  background: var(--color-acento);
+  border-color: var(--color-acento-hover);
 }
 
 .action-error {
   margin: -0.25rem 0 0.5rem;
-  color: #a33d30;
+  color: var(--color-estado-error-texto);
   font-size: 0.85rem;
 }
 
