@@ -19,7 +19,7 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 | 7 | Admin: generar oferta semanal | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Gonza](https://img.shields.io/badge/-Gonza-2da44e?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 8 | Home: mostrar ofertas semanales | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Gonza](https://img.shields.io/badge/-Gonza-2da44e?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 9 | Mejorar la UI del modal de login | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
-| 10 | Admin: hacer funcionar el filtro de pedidos por estado | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
+| 10 | Admin: hacer funcionar el filtro de pedidos por estado | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
 | 11 | Mejorar la paleta de colores y los botones del sitio | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 12 | Acceso al catálogo: link en el header y "Ver todos" en Home | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 13 | Admin: paginar el listado de pedidos | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
@@ -214,7 +214,7 @@ El modal se dispara por **store** (`src/store/auth.js`):
 
 - La tabla **Pedidos de todos los usuarios** está al final de `Dashboard.vue` (ruta `/admin`, protegida con `meta: { requireAdminLogin: true }`). Muestra número, usuario (nombre y apellido, con el `username` debajo), fecha, total y estado.
 - `GET /pedidos/all` se pide con `fetchWithAuth` junto con `GET /admin/dashboard`; el botón **Actualizar** y volver a la pestaña recargan ambos.
-- Extra: hay un **filtro por estado** con los estados presentes en los pedidos y un mensaje cuando ningún pedido tiene el estado elegido.
+- El filtro por estado ofrece los cuatro estados documentados del backend y muestra un mensaje cuando no hay coincidencias.
 
 ---
 
@@ -337,11 +337,11 @@ El modal se dispara por **store** (`src/store/auth.js`):
 
 **Criterios de aceptación**
 
-- [ ] Al elegir un estado, la tabla muestra solo los pedidos con ese estado.
-- [ ] La opción **Todos** vuelve al listado completo.
-- [ ] Mensaje cuando no hay pedidos con el estado elegido.
-- [ ] El filtro sigue funcionando después de **Actualizar** el panel.
-- [ ] Se puede combinar con el filtro por usuario (Tarea 6).
+- [x] Al elegir un estado, la tabla muestra solo los pedidos con ese estado.
+- [x] La opción **Todos** vuelve al listado completo.
+- [x] Mensaje cuando no hay pedidos con el estado elegido.
+- [x] El filtro sigue funcionando después de **Actualizar** el panel.
+- [x] Se puede combinar con el filtro por usuario (Tarea 6).
 
 ---
 
