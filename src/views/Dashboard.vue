@@ -1,6 +1,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useAuthStore } from '../store/auth.js'
+import { ESTADOS_PEDIDO, normalizarEstadoPedido, obtenerEstadoPedido } from '../utils/pedidoEstado.js'
 import { Bar, Line } from 'vue-chartjs'
 import {
   BarElement,
@@ -481,17 +482,7 @@ const nombresEstado = (estado) => {
     .join(' ')
 }
 
-const estadosDisponibles = computed(() =>
-  [
-    ...new Set(
-      pedidosTodos.value
-        .map((pedido) =>
-          typeof pedido.status === 'string' ? pedido.status.trim() : '',
-        )
-        .filter(Boolean),
-    ),
-  ].sort((a, b) => a.localeCompare(b, 'es-AR')),
-)
+const estadosDisponibles = ESTADOS_PEDIDO
 
 const usuariosDisponibles = computed(() => {
   const usuariosPorUsername = new Map()
@@ -523,7 +514,7 @@ const pedidosFiltrados = computed(() => {
   return pedidos.value.filter((pedido) => {
     const coincideEstado =
       estadoSeleccionado.value === 'todos' ||
-      pedido.status === estadoSeleccionado.value
+      normalizarEstadoPedido(pedido.status) === estadoSeleccionado.value
     const coincideUsuario =
       usuarioSeleccionado.value === 'todos' ||
       String(pedido.user?.username ?? '').trim() === usuarioSeleccionado.value
@@ -584,24 +575,21 @@ function nombreUsuario(usuario) {
   return nombre || usuario?.username || 'Usuario'
 }
 
-const clasesEstadoPedido = {
-  pendiente: 'is-warning estado-pedido--pendiente-pago',
+const clasesEstadoAdicionales = {
   pendiente_pago: 'is-warning estado-pedido--pendiente-pago',
   pagado: 'is-success estado-pedido--pagado',
   en_preparacion: 'is-info estado-pedido--en-preparacion',
-  enviado: 'is-info estado-pedido--enviado',
-  entregado: 'is-success estado-pedido--entregado',
-  cancelado: 'is-danger estado-pedido--cancelado',
   reembolsado: 'is-light estado-pedido--reembolsado',
 }
 
 function claseEstadoPedido(estado) {
-  const normalizado = String(estado ?? '')
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, '_')
+  const normalizado = normalizarEstadoPedido(estado)
 
-  return clasesEstadoPedido[normalizado] ?? ''
+  return (
+    obtenerEstadoPedido(estado).clase ||
+    clasesEstadoAdicionales[normalizado] ||
+    ''
+  )
 }
 const pedidosParaMostrar = computed(() =>
   pedidosFiltrados.value.map((pedido) => ({

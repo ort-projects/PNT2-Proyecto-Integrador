@@ -25,6 +25,9 @@ function buscarProductos() {
     query: busqueda ? { busqueda } : {},
   })
 }
+function cerrarMenuCuenta(event) {
+  event.currentTarget.open = false
+}
 </script>
 
 <template>
@@ -71,7 +74,7 @@ function buscarProductos() {
     </span>
   </RouterLink>
 
-  <details class="account-menu">
+  <details class="account-menu" @mouseleave="cerrarMenuCuenta">
     <summary class="account-trigger" aria-label="Opciones de cuenta">
       <svg aria-hidden="true" viewBox="0 0 24 24" class="avatar-icon">
         <circle cx="12" cy="12" r="10" />
@@ -265,6 +268,14 @@ function buscarProductos() {
   box-shadow: var(--sombra-overlay);
 }
 
+.account-dropdown::before {
+  position: absolute;
+  top: -0.8rem;
+  right: 0;
+  left: 0;
+  height: 0.8rem;
+  content: '';
+}
 .account-link {
   display: block;
   width: 100%;

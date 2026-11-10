@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 import { useAuthStore } from '../store/auth.js'
+import { obtenerEstadoPedido } from '../utils/pedidoEstado.js'
 
 const authStore = useAuthStore()
 
@@ -17,17 +18,7 @@ const cargando = ref(false)
 const error = ref('')
 const sesionVencida = ref(false)
 
-// Estados del enum EstadoPedido del backend.
-const estados = {
-  pendiente: { texto: 'Pendiente', clase: 'is-warning estado-pedido--pendiente-pago' },
-  enviado: { texto: 'Enviado', clase: 'is-info estado-pedido--enviado' },
-  entregado: { texto: 'Entregado', clase: 'is-success estado-pedido--entregado' },
-  cancelado: { texto: 'Cancelado', clase: 'is-danger estado-pedido--cancelado' },
-}
 
-function obtenerEstado(status) {
-  return estados[status] ?? { texto: status || '-', clase: '' }
-}
 
 const formatoFecha = new Intl.DateTimeFormat('es-AR', {
   dateStyle: 'short',
@@ -174,8 +165,8 @@ function iniciarSesion() {
                   ${{ pedido.total }}
                 </td>
                 <td>
-                  <span class="tag is-light" :class="obtenerEstado(pedido.status).clase">
-                    {{ obtenerEstado(pedido.status).texto }}
+                  <span class="tag is-light" :class="obtenerEstadoPedido(pedido.status).clase">
+                    {{ obtenerEstadoPedido(pedido.status).texto }}
                   </span>
                 </td>
               </tr>
