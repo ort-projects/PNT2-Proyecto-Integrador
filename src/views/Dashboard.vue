@@ -29,15 +29,21 @@ const authStore = useAuthStore()
 const anioSeleccionado = new Date().getFullYear()
 const DASHBOARD_URL = 'http://localhost:3000/admin/dashboard'
 const PEDIDOS_URL = 'http://localhost:3000/pedidos/all'
+const USUARIOS_URL = 'http://localhost:3000/usuarios'
 
 const ventas = ref([])
 const productos = ref([])
 const pedidos = ref([])
+const pedidosTodos = ref([])
+const usuarios = ref(null)
 const cargandoDashboard = ref(true)
 const cargandoPedidos = ref(true)
+const cargandoUsuarios = ref(true)
 const errorCarga = ref('')
 const errorPedidos = ref('')
+const errorUsuarios = ref('')
 const estadoSeleccionado = ref('todos')
+const usuarioSeleccionado = ref('todos')
 const productoActualizandoId = ref(null)
 const errorDestacado = ref('')
 
@@ -100,8 +106,15 @@ const cargarPedidos = crearCargaUnica({
   error: errorPedidos,
   mensajeError: 'No se pudieron cargar los pedidos.',
   ejecutar: async (mensajeError) => {
+    const parametros = new URLSearchParams({
+      username: usuarioSeleccionado.value,
+    })
+    const urlPedidos =
+      usuarioSeleccionado.value === 'todos'
+        ? PEDIDOS_URL
+        : `${PEDIDOS_URL}?${parametros.toString()}`
     const data = await fetchJsonConAuth(
-      PEDIDOS_URL,
+      urlPedidos,
       mensajeError,
     )
 
@@ -110,11 +123,29 @@ const cargarPedidos = crearCargaUnica({
     }
 
     pedidos.value = data
+    if (usuarioSeleccionado.value === 'todos') {
+      pedidosTodos.value = data
+    }
+  },
+})
+
+const cargarUsuarios = crearCargaUnica({
+  cargando: cargandoUsuarios,
+  error: errorUsuarios,
+  mensajeError: 'No se pudo cargar la lista de usuarios.',
+  ejecutar: async (mensajeError) => {
+    const data = await fetchJsonConAuth(USUARIOS_URL, mensajeError)
+
+    if (!Array.isArray(data)) {
+      throw new Error('El servidor devolvió una lista de usuarios inválida.')
+    }
+
+    usuarios.value = data
   },
 })
 
 function actualizarPanel() {
-  return Promise.all([cargarDashboard(), cargarPedidos()])
+  return Promise.all([cargarDashboard(), cargarPedidos(), cargarUsuarios()])
 }
 
 function alVolverAlPanel() {
@@ -315,19 +346,31 @@ const productosMasVendidos = computed(() =>
     .slice(0, 8),
 )
 
+function obtenerColorDeTema(nombre) {
+  return getComputedStyle(document.documentElement).getPropertyValue(nombre).trim()
+}
+
+const coloresGrafico = {
+  serie: obtenerColorDeTema('--color-grafico-serie'),
+  relleno: obtenerColorDeTema('--color-grafico-relleno'),
+  destacado: obtenerColorDeTema('--color-grafico-destacado'),
+  superficie: obtenerColorDeTema('--color-grafico-superficie'),
+  rejilla: obtenerColorDeTema('--color-grafico-rejilla'),
+  texto: obtenerColorDeTema('--color-secundario'),
+}
 const datosMensuales = computed(() => ({
   labels: nombresMeses,
   datasets: [
     {
       label: 'Pedidos',
       data: resumenMensual.value.map((mes) => mes.pedidos),
-      borderColor: '#718453',
-      backgroundColor: 'rgba(168, 185, 135, 0.22)',
+      borderColor: coloresGrafico.serie,
+      backgroundColor: coloresGrafico.relleno,
       borderWidth: 2.5,
       pointRadius: 3,
       pointHoverRadius: 7,
-      pointBackgroundColor: '#718453',
-      pointBorderColor: '#faf7ef',
+      pointBackgroundColor: coloresGrafico.serie,
+      pointBorderColor: coloresGrafico.superficie,
       pointBorderWidth: 2,
       tension: 0.35,
       fill: true,
@@ -342,7 +385,7 @@ const datosDias = computed(() => ({
       label: 'Unidades vendidas',
       data: ventasPorDia.value.map((dia) => dia.unidades),
       backgroundColor: nombresDias.map((_, index) =>
-        index === menorDia.value ? '#d39b63' : '#a8b987',
+        index === menorDia.value ? coloresGrafico.destacado : coloresGrafico.serie,
       ),
       borderRadius: 5,
       maxBarThickness: 48,
@@ -356,7 +399,7 @@ const datosProductos = computed(() => ({
     {
       label: 'Unidades',
       data: productosMasVendidos.value.map((producto) => producto.unidades),
-      backgroundColor: '#8b9b68',
+      backgroundColor: coloresGrafico.serie,
       borderRadius: 5,
       maxBarThickness: 28,
     },
@@ -376,11 +419,11 @@ const opcionesLinea = {
     },
   },
   scales: {
-    x: { grid: { display: false } },
+    x: { grid: { display: false }, ticks: { color: coloresGrafico.texto } },
     y: {
       beginAtZero: true,
-      ticks: { precision: 0 },
-      grid: { color: 'rgba(113, 109, 98, 0.12)' },
+      ticks: { precision: 0, color: coloresGrafico.texto },
+      grid: { color: coloresGrafico.rejilla },
     },
   },
 }
@@ -403,10 +446,10 @@ const opcionesBarrasHorizontales = {
   scales: {
     x: {
       beginAtZero: true,
-      ticks: { precision: 0 },
-      grid: { color: 'rgba(113, 109, 98, 0.12)' },
+      ticks: { precision: 0, color: coloresGrafico.texto },
+      grid: { color: coloresGrafico.rejilla },
     },
-    y: { grid: { display: false } },
+    y: { grid: { display: false }, ticks: { color: coloresGrafico.texto } },
   },
 }
 
@@ -441,7 +484,7 @@ const nombresEstado = (estado) => {
 const estadosDisponibles = computed(() =>
   [
     ...new Set(
-      pedidos.value
+      pedidosTodos.value
         .map((pedido) =>
           typeof pedido.status === 'string' ? pedido.status.trim() : '',
         )
@@ -450,13 +493,70 @@ const estadosDisponibles = computed(() =>
   ].sort((a, b) => a.localeCompare(b, 'es-AR')),
 )
 
-const pedidosFiltrados = computed(() => {
-  if (estadoSeleccionado.value === 'todos') return pedidos.value
+const usuariosDisponibles = computed(() => {
+  const usuariosPorUsername = new Map()
+  const usuariosFuente =
+    usuarios.value ?? pedidosTodos.value.map((pedido) => pedido?.user)
 
-  return pedidos.value.filter(
-    (pedido) => pedido.status === estadoSeleccionado.value,
+  usuariosFuente.forEach((usuario) => {
+    const username = typeof usuario?.username === 'string'
+      ? usuario.username.trim()
+      : ''
+
+    if (!username || usuariosPorUsername.has(username)) return
+
+    const nombre = nombreUsuario(usuario)
+    usuariosPorUsername.set(username, {
+      username,
+      nombre,
+      etiqueta: nombre === username ? username : `${nombre} (${username})`,
+    })
+  })
+
+  return [...usuariosPorUsername.values()].sort((a, b) =>
+    a.nombre.localeCompare(b.nombre, 'es-AR') ||
+    a.username.localeCompare(b.username, 'es-AR'),
   )
 })
+
+const pedidosFiltrados = computed(() => {
+  return pedidos.value.filter((pedido) => {
+    const coincideEstado =
+      estadoSeleccionado.value === 'todos' ||
+      pedido.status === estadoSeleccionado.value
+    const coincideUsuario =
+      usuarioSeleccionado.value === 'todos' ||
+      String(pedido.user?.username ?? '').trim() === usuarioSeleccionado.value
+
+    return coincideEstado && coincideUsuario
+  })
+})
+
+function cambiarUsuario() {
+  void cargarPedidos()
+}
+
+function mensajeSinPedidos() {
+  if (
+    usuarioSeleccionado.value === 'todos' &&
+    estadoSeleccionado.value === 'todos'
+  ) {
+    return 'Todavía no hay pedidos'
+  }
+
+  const filtros = []
+  if (usuarioSeleccionado.value !== 'todos') {
+    const usuario = usuariosDisponibles.value.find(
+      (opcion) => opcion.username === usuarioSeleccionado.value,
+    )
+    filtros.push(`de ${usuario?.nombre ?? usuarioSeleccionado.value}`)
+  }
+  if (estadoSeleccionado.value !== 'todos') {
+    filtros.push(`con estado ${nombresEstado(estadoSeleccionado.value)}`)
+  }
+
+  return `No hay pedidos ${filtros.join(' ')}`
+}
 
 function formatearFechaPedido(fecha) {
   const fechaPedido = convertirFecha(fecha)
@@ -484,6 +584,25 @@ function nombreUsuario(usuario) {
   return nombre || usuario?.username || 'Usuario'
 }
 
+const clasesEstadoPedido = {
+  pendiente: 'is-warning estado-pedido--pendiente-pago',
+  pendiente_pago: 'is-warning estado-pedido--pendiente-pago',
+  pagado: 'is-success estado-pedido--pagado',
+  en_preparacion: 'is-info estado-pedido--en-preparacion',
+  enviado: 'is-info estado-pedido--enviado',
+  entregado: 'is-success estado-pedido--entregado',
+  cancelado: 'is-danger estado-pedido--cancelado',
+  reembolsado: 'is-light estado-pedido--reembolsado',
+}
+
+function claseEstadoPedido(estado) {
+  const normalizado = String(estado ?? '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '_')
+
+  return clasesEstadoPedido[normalizado] ?? ''
+}
 const pedidosParaMostrar = computed(() =>
   pedidosFiltrados.value.map((pedido) => ({
     ...pedido,
@@ -491,6 +610,7 @@ const pedidosParaMostrar = computed(() =>
     fechaVisible: formatearFechaPedido(pedido.date),
     totalVisible: formatearTotal(pedido.total),
     estadoVisible: nombresEstado(pedido.status),
+    claseEstado: claseEstadoPedido(pedido.status),
   })),
 )
 </script>
@@ -508,7 +628,7 @@ const pedidosParaMostrar = computed(() =>
         </div>
 
         <button
-          class="button is-outlined"
+          class="button is-secondary"
           type="button"
           :disabled="cargandoDashboard || cargandoPedidos"
           @click="actualizarPanel"
@@ -575,7 +695,7 @@ const pedidosParaMostrar = computed(() =>
             </article>
           </div>
           <div class="column is-half-tablet is-one-quarter-desktop">
-            <article class="box summary-card pistachio-card">
+            <article class="box summary-card">
               <p class="summary-label">Unidades</p>
               <p class="summary-value">{{ totalUnidades }}</p>
               <p class="summary-note">Prendas incluidas en los pedidos</p>
@@ -733,31 +853,60 @@ const pedidosParaMostrar = computed(() =>
           <div>
             <h2 class="title is-4">Pedidos de todos los usuarios</h2>
             <p class="orders-description">
-              Filtrá por estado o consultá el listado completo.
+              Filtrá por usuario y estado o consultá el listado completo.
             </p>
           </div>
 
-          <div class="field orders-filter">
-            <label class="label" for="filtro-estado-pedido">Estado</label>
-            <div class="control">
-              <div class="select">
-                <select
-                  id="filtro-estado-pedido"
-                  v-model="estadoSeleccionado"
-                >
-                  <option value="todos">Todos</option>
-                  <option
-                    v-for="estado in estadosDisponibles"
-                    :key="estado"
-                    :value="estado"
+          <div class="orders-filters">
+            <div class="field orders-filter">
+              <label class="label" for="filtro-usuario-pedido">Usuario</label>
+              <div class="control">
+                <div class="select">
+                  <select
+                    id="filtro-usuario-pedido"
+                    v-model="usuarioSeleccionado"
+                    :disabled="cargandoPedidos || cargandoUsuarios"
+                    @change="cambiarUsuario"
                   >
-                    {{ nombresEstado(estado) }}
-                  </option>
-                </select>
+                    <option value="todos">Todos los usuarios</option>
+                    <option
+                      v-for="usuario in usuariosDisponibles"
+                      :key="usuario.username"
+                      :value="usuario.username"
+                    >
+                      {{ usuario.etiqueta }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="field orders-filter">
+              <label class="label" for="filtro-estado-pedido">Estado</label>
+              <div class="control">
+                <div class="select">
+                  <select
+                    id="filtro-estado-pedido"
+                    v-model="estadoSeleccionado"
+                  >
+                    <option value="todos">Todos</option>
+                    <option
+                      v-for="estado in estadosDisponibles"
+                      :key="estado"
+                      :value="estado"
+                    >
+                      {{ nombresEstado(estado) }}
+                    </option>
+                  </select>
+                </div>
               </div>
             </div>
           </div>
         </div>
+        <p v-if="errorUsuarios" class="orders-description" role="status">
+          No se pudo cargar la lista de usuarios, verifique que el usuario sea
+          correcto y tenga pedidos.
+        </p>
 
         <p
           v-if="!cargandoPedidos && !errorPedidos"
@@ -784,18 +933,21 @@ const pedidosParaMostrar = computed(() =>
         </div>
 
         <div v-else-if="pedidosFiltrados.length === 0" class="dashboard-state">
-          <p v-if="pedidos.length === 0" class="title is-5">
-            Todavía no hay pedidos
+          <p class="title is-5">
+            {{ mensajeSinPedidos() }}
           </p>
-          <p v-else class="title is-5">
-            No hay pedidos con estado {{ nombresEstado(estadoSeleccionado) }}
-          </p>
-          <p v-if="pedidos.length === 0">
+          <p
+            v-if="
+              pedidos.length === 0 &&
+              usuarioSeleccionado === 'todos' &&
+              estadoSeleccionado === 'todos'
+            "
+          >
             Cuando se registre una compra, aparecerá en este listado.
           </p>
           <p v-else>
-            Elegí otro estado o seleccioná “Todos” para volver al listado
-            completo.
+            Elegí otro usuario o estado, o seleccioná “Todos” para volver al
+            listado completo.
           </p>
         </div>
 
@@ -830,7 +982,7 @@ const pedidosParaMostrar = computed(() =>
                 <td>{{ pedido.fechaVisible }}</td>
                 <td>{{ pedido.totalVisible }}</td>
                 <td>
-                  <span class="tag is-light">
+                  <span class="tag is-light" :class="pedido.claseEstado">
                     {{ pedido.estadoVisible }}
                   </span>
                 </td>
@@ -880,15 +1032,12 @@ const pedidosParaMostrar = computed(() =>
   border: 1px solid var(--color-borde);
 }
 
-.pistachio-card {
-  background: #e7edda;
-}
 
 .summary-value {
   margin: 0.35rem 0;
   color: var(--color-texto);
   font-size: 2rem;
-  font-weight: 750;
+  font-weight: 700;
   line-height: 1.1;
 }
 
@@ -920,9 +1069,6 @@ const pedidosParaMostrar = computed(() =>
   margin-top: 1.25rem;
 }
 
-.recommendation-card {
-  background: #f7f4e9;
-}
 
 .chart-card .title,
 .recommendation-card .title {
@@ -948,7 +1094,14 @@ const pedidosParaMostrar = computed(() =>
   margin-bottom: 0.75rem;
 }
 
+.orders-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
 .orders-filter {
+  flex: 1 1 12rem;
   min-width: 12rem;
   margin-bottom: 0;
 }
@@ -1044,13 +1197,13 @@ const pedidosParaMostrar = computed(() =>
 }
 
 .featured-button[aria-pressed='true'] {
-  background: #e7edda;
-  border-color: #a8b987;
+  background: var(--color-acento);
+  border-color: var(--color-acento-hover);
 }
 
 .action-error {
   margin: -0.25rem 0 0.5rem;
-  color: #a33d30;
+  color: var(--color-estado-error-texto);
   font-size: 0.85rem;
 }
 

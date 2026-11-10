@@ -43,7 +43,7 @@ const props = defineProps(["producto"])
 
 .product-link:hover .product-card {
   transform: translateY(-4px);
-  box-shadow: 0 8px 20px rgb(0 0 0 / 12%);
+  box-shadow: var(--sombra-tarjeta);
 }
 
 .product-card .card-image {

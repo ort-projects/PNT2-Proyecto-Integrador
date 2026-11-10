@@ -19,10 +19,10 @@ const sesionVencida = ref(false)
 
 // Estados del enum EstadoPedido del backend.
 const estados = {
-  pendiente: { texto: 'Pendiente', clase: 'is-warning' },
-  enviado: { texto: 'Enviado', clase: 'is-info' },
-  entregado: { texto: 'Entregado', clase: 'is-success' },
-  cancelado: { texto: 'Cancelado', clase: 'is-danger' },
+  pendiente: { texto: 'Pendiente', clase: 'is-warning estado-pedido--pendiente-pago' },
+  enviado: { texto: 'Enviado', clase: 'is-info estado-pedido--enviado' },
+  entregado: { texto: 'Entregado', clase: 'is-success estado-pedido--entregado' },
+  cancelado: { texto: 'Cancelado', clase: 'is-danger estado-pedido--cancelado' },
 }
 
 function obtenerEstado(status) {
@@ -195,13 +195,36 @@ function iniciarSesion() {
 }
 
 .pedidos-table {
+  width: 100%;
   background: var(--color-superficie);
+  color: var(--color-texto);
+}
+
+.pedidos-table thead th {
+  background: var(--color-fondo);
+  color: var(--color-azul-noche);
+  font-family: var(--font-titulos);
+  font-weight: 600;
+}
+
+.pedidos-table tbody th,
+.pedidos-table tbody td {
+  background: var(--color-superficie);
+  color: var(--color-texto);
+  border-color: var(--color-borde);
+}
+
+.pedidos-table tbody tr:hover > th,
+.pedidos-table tbody tr:hover > td {
+  background: var(--color-fondo);
 }
 
 .pedidos-table th,
 .pedidos-table td {
   padding: 1rem 1.25rem;
-  vertical-align: top;
+  vertical-align: middle;
+  color: var(--color-texto);
+  border-color: var(--color-borde);
 }
 
 .pedido-fecha {
@@ -235,8 +258,8 @@ function iniciarSesion() {
 }
 
 .pedido-total {
-  color: #566c50;
-  font-weight: 800;
+  color: var(--color-azul-noche);
+  font-weight: 700;
   white-space: nowrap;
 }
 </style>

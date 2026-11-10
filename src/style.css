@@ -1,16 +1,53 @@
 :root {
   color-scheme: light;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #25231f;
-  background: #f1eadc;
+  font-family: var(--font-texto);
+  color: #25283A;
+  background: var(--color-fondo);
 
-  --color-fondo: #f1eadc;
-  --color-superficie: #faf7ef;
-  --color-texto: #25231f;
-  --color-secundario: #716d62;
-  --color-pistacho: #dce7bf;
-  --color-pistacho-hover: #cbd9a8;
-  --color-borde: #d7cebc;
+  --font-texto: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-titulos: "Raleway", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --color-fondo: #F4F2FA;
+  --color-superficie: #FFFFFF;
+  --color-texto: #25283A;
+  --color-secundario: #777B89;
+  --color-borde: #E5E7EB;
+  --color-acento: #F9B17A;
+  --color-acento-hover: #E88E59;
+  --color-azul-noche: #2D3250;
+  --color-azul-carbon: #424769;
+  --color-azul-lavanda: #676F9D;
+
+  --color-estado-exito-texto: #237A50;
+  --color-estado-exito-fondo: #E7F5EC;
+  --color-estado-info-texto: #365D91;
+  --color-estado-info-fondo: #EAF1FA;
+  --color-estado-aviso-texto: #94621D;
+  --color-estado-aviso-fondo: #FFF3DC;
+  --color-estado-error-texto: #B42332;
+  --color-estado-error-fondo: #FDEBED;
+
+  --color-pedido-pendiente-pago: #D99A36;
+  --color-pedido-pagado: #367C5B;
+  --color-pedido-en-preparacion: #676F9D;
+  --color-pedido-enviado: #3F78A8;
+  --color-pedido-entregado: #237A50;
+  --color-pedido-cancelado: #B42332;
+  --color-pedido-reembolsado: #777B89;
+
+  --color-grafico-serie: #676F9D;
+  --color-grafico-relleno: rgba(103, 111, 157, 0.18);
+  --color-grafico-destacado: #F9B17A;
+  --color-grafico-superficie: #FFFFFF;
+  --color-grafico-rejilla: rgba(229, 231, 235, 0.9);
+
+  --sombra-tarjeta: 0 4px 16px rgba(37, 40, 58, 0.07);
+  --sombra-overlay: 0 8px 28px rgba(37, 40, 58, 0.14);
+  --sombra-foco: 0 0 0 3px rgba(103, 111, 157, 0.22);
+  --radio-boton: 9px;
+  --radio-control: 8px;
+  --radio-tarjeta: 10px;
+  --transicion-suave: 180ms ease;
 }
 
 * {
@@ -23,6 +60,8 @@ body {
   margin: 0;
   background: var(--color-fondo);
   color: var(--color-texto);
+  font-family: var(--font-texto);
+  font-weight: 400;
 }
 
 #app {
@@ -34,9 +73,13 @@ h2,
 h3,
 .title {
   color: var(--color-texto);
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-weight: 750;
-  letter-spacing: -0.035em;
+  font-family: var(--font-titulos);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+h3 {
+  font-weight: 600;
 }
 
 .subtitle {
@@ -50,70 +93,289 @@ h3,
 
 .box,
 .card {
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-tarjeta);
   background: var(--color-superficie);
   color: var(--color-texto);
-  box-shadow: none;
+  box-shadow: var(--sombra-tarjeta);
 }
 
 .card {
-  border: 1px solid var(--color-borde);
-  transition: transform 180ms ease, box-shadow 180ms ease;
+  transition: transform var(--transicion-suave), box-shadow var(--transicion-suave);
 }
 
 .card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 22px rgb(23 23 21 / 10%);
+  box-shadow: var(--sombra-tarjeta);
 }
 
 .button {
-  border-radius: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
+  border: 1px solid var(--color-azul-noche);
+  border-radius: var(--radio-boton);
+  background: var(--color-azul-noche);
+  color: var(--color-superficie);
+  font-family: var(--font-titulos);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  transition:
+    background-color var(--transicion-suave),
+    border-color var(--transicion-suave),
+    color var(--transicion-suave),
+    box-shadow var(--transicion-suave),
+    transform var(--transicion-suave);
+}
+
+.button:hover:not(:disabled) {
+  border-color: var(--color-azul-carbon);
+  background: var(--color-azul-carbon);
+  color: var(--color-acento);
 }
 
 .button.is-primary {
-  background: transparent;
-  border-color: var(--color-texto);
-  color: var(--color-texto);
+  border-color: var(--color-acento);
+  background: var(--color-acento);
+  color: var(--color-azul-noche);
 }
 
-.button.is-primary:hover {
-  background: var(--color-pistacho);
-  border-color: var(--color-pistacho);
-  color: var(--color-texto);
+.button.is-primary:hover:not(:disabled) {
+  border-color: var(--color-acento-hover);
+  background: var(--color-acento-hover);
+  color: var(--color-azul-noche);
+}
+
+.button.is-secondary {
+  border-color: var(--color-azul-noche);
+  background: var(--color-azul-noche);
+  color: var(--color-superficie);
 }
 
 .button.is-outlined {
+  border-color: var(--color-azul-noche);
   background: transparent;
-  border-color: var(--color-texto);
-  color: var(--color-texto);
+  color: var(--color-azul-noche);
 }
 
-.button.is-outlined:hover {
-  background: var(--color-pistacho);
-  border-color: var(--color-pistacho);
-  color: var(--color-texto);
+.button.is-outlined:hover:not(:disabled) {
+  border-color: var(--color-azul-noche);
+  background: var(--color-azul-noche);
+  color: var(--color-acento);
+}
+
+.button.is-danger.is-outlined {
+  border-color: var(--color-estado-error-texto);
+  color: var(--color-estado-error-texto);
+}
+
+.button.is-danger.is-outlined:hover:not(:disabled) {
+  border-color: var(--color-estado-error-texto);
+  background: var(--color-estado-error-fondo);
+  color: var(--color-estado-error-texto);
+}
+
+.button.is-light {
+  border-color: var(--color-borde);
+  background: var(--color-superficie);
+  color: var(--color-azul-noche);
+}
+
+.button.is-light:hover:not(:disabled) {
+  border-color: var(--color-borde);
+  background: var(--color-fondo);
+  color: var(--color-azul-noche);
+}
+
+.button.is-success.is-light {
+  border-color: var(--color-estado-exito-fondo);
+  background: var(--color-estado-exito-fondo);
+  color: var(--color-estado-exito-texto);
+}
+
+.button.is-info.is-light {
+  border-color: var(--color-estado-info-fondo);
+  background: var(--color-estado-info-fondo);
+  color: var(--color-estado-info-texto);
+}
+
+.button.is-warning.is-light {
+  border-color: var(--color-estado-aviso-fondo);
+  background: var(--color-estado-aviso-fondo);
+  color: var(--color-estado-aviso-texto);
+}
+
+.button.is-danger.is-light {
+  border-color: var(--color-estado-error-fondo);
+  background: var(--color-estado-error-fondo);
+  color: var(--color-estado-error-texto);
+}
+
+.button:focus-visible {
+  outline: none;
+  box-shadow: var(--sombra-foco);
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 .input,
 .textarea,
 .select select {
   border: 1px solid var(--color-borde);
-  border-radius: 0;
+  border-radius: var(--radio-control);
   background: var(--color-superficie);
   color: var(--color-texto);
   box-shadow: none;
+  font-family: var(--font-texto);
 }
 
-.input::placeholder {
-  color: #96918a;
+.input::placeholder,
+.textarea::placeholder {
+  color: var(--color-secundario);
 }
 
 .input:focus,
 .textarea:focus,
 .select select:focus {
-  border-color: #a8b987;
-  box-shadow: 0 0 0 2px rgb(220 231 191 / 60%);
+  border-color: var(--color-azul-lavanda);
+  box-shadow: var(--sombra-foco);
+}
+
+.label {
+  color: var(--color-texto);
+}
+
+.select:not(.is-multiple):not(.is-loading)::after {
+  border-color: var(--color-azul-lavanda);
+}
+
+.table {
+  background-color: var(--color-superficie);
+  color: var(--color-texto);
+}
+
+.table thead th {
+  border-color: var(--color-borde);
+  background-color: var(--color-fondo);
+  color: var(--color-azul-noche);
+  font-family: var(--font-titulos);
+  font-weight: 600;
+}
+
+.table tbody th,
+.table tbody td {
+  border-color: var(--color-borde);
+  background-color: var(--color-superficie);
+  color: var(--color-texto);
+}
+
+.table tbody tr:hover > th,
+.table tbody tr:hover > td {
+  background-color: var(--color-fondo);
+}
+.notification {
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-tarjeta);
+  background: var(--color-superficie);
+  color: var(--color-texto);
+}
+
+.notification.is-success,
+.notification.is-success.is-light {
+  border-color: var(--color-estado-exito-fondo);
+  background: var(--color-estado-exito-fondo);
+  color: var(--color-estado-exito-texto);
+}
+
+.notification.is-info,
+.notification.is-info.is-light {
+  border-color: var(--color-estado-info-fondo);
+  background: var(--color-estado-info-fondo);
+  color: var(--color-estado-info-texto);
+}
+
+.notification.is-warning,
+.notification.is-warning.is-light {
+  border-color: var(--color-estado-aviso-fondo);
+  background: var(--color-estado-aviso-fondo);
+  color: var(--color-estado-aviso-texto);
+}
+
+.notification.is-danger,
+.notification.is-danger.is-light {
+  border-color: var(--color-estado-error-fondo);
+  background: var(--color-estado-error-fondo);
+  color: var(--color-estado-error-texto);
+}
+
+.notification.is-toast {
+  box-shadow: var(--sombra-overlay);
+}
+
+.tag,
+.label {
+  font-family: var(--font-titulos);
+  font-weight: 600;
+}
+
+.tag {
+  border-radius: 999px;
+}
+
+.tag.is-light {
+  border: 1px solid var(--color-borde);
+  background: var(--color-fondo);
+  color: var(--color-secundario);
+}
+
+.tag.is-success.is-light {
+  border-color: var(--color-estado-exito-fondo);
+  background: var(--color-estado-exito-fondo);
+  color: var(--color-estado-exito-texto);
+}
+
+.tag.is-info.is-light {
+  border-color: var(--color-estado-info-fondo);
+  background: var(--color-estado-info-fondo);
+  color: var(--color-estado-info-texto);
+}
+
+.tag.is-warning.is-light {
+  border-color: var(--color-estado-aviso-fondo);
+  background: var(--color-estado-aviso-fondo);
+  color: var(--color-estado-aviso-texto);
+}
+
+.tag.is-danger.is-light {
+  border-color: var(--color-estado-error-fondo);
+  background: var(--color-estado-error-fondo);
+  color: var(--color-estado-error-texto);
+}
+
+.tag.is-light.estado-pedido--pendiente-pago { color: var(--color-pedido-pendiente-pago); }
+.tag.is-light.estado-pedido--pagado { color: var(--color-pedido-pagado); }
+.tag.is-light.estado-pedido--en-preparacion { color: var(--color-pedido-en-preparacion); }
+.tag.is-light.estado-pedido--enviado { color: var(--color-pedido-enviado); }
+.tag.is-light.estado-pedido--entregado { color: var(--color-pedido-entregado); }
+.tag.is-light.estado-pedido--cancelado { color: var(--color-pedido-cancelado); }
+.tag.is-light.estado-pedido--reembolsado { color: var(--color-pedido-reembolsado); }
+
+.help.is-success,
+.has-text-success {
+  color: var(--color-estado-exito-texto);
+}
+
+.progress.is-primary {
+  color: var(--color-acento);
+}
+
+.progress.is-primary::-webkit-progress-value {
+  background-color: var(--color-acento);
+}
+
+.progress.is-primary::-moz-progress-bar {
+  background-color: var(--color-acento);
 }
 
 a {
@@ -121,15 +383,11 @@ a {
 }
 
 a:hover {
-  color: #566c50;
+  color: var(--color-azul-lavanda);
 }
 
 @media (max-width: 768px) {
   .section {
     padding: 2rem 1.25rem;
   }
-}
-
-.label {
-  color: var(--color-texto);
 }

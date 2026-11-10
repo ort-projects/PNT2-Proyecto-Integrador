@@ -153,7 +153,7 @@ function buscarProductos() {
   width: fit-content;
   color: var(--color-texto);
   font-size: 1.65rem;
-  font-weight: 800;
+  font-weight: 700;
   letter-spacing: -0.06em;
 }
 
@@ -218,7 +218,7 @@ function buscarProductos() {
   justify-content: center;
   padding: 0 0.2rem;
   border-radius: 999px;
-  background: var(--color-pistacho);
+  background: var(--color-acento);
   color: var(--color-texto);
   font-size: 0.7rem;
   font-weight: 700;
@@ -262,7 +262,7 @@ function buscarProductos() {
   padding: 0.4rem;
   border: 1px solid var(--color-borde);
   background: var(--color-superficie);
-  box-shadow: 0 8px 22px rgb(23 23 21 / 10%);
+  box-shadow: var(--sombra-overlay);
 }
 
 .account-link {
@@ -279,7 +279,7 @@ function buscarProductos() {
 }
 
 .account-link:hover {
-  background: var(--color-pistacho);
+  background: var(--color-acento);
 }
 
 .sr-only {

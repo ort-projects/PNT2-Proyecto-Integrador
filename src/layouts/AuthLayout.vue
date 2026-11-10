@@ -6,7 +6,7 @@
           ModArg <span>Administración</span>
         </RouterLink>
 
-        <RouterLink to="/" class="button is-outlined">
+        <RouterLink to="/" class="button is-secondary">
           Ver tienda
         </RouterLink>
       </div>
@@ -43,7 +43,7 @@
   gap: 0.75rem;
   color: var(--color-texto);
   font-size: 1.25rem;
-  font-weight: 750;
+  font-weight: 700;
   letter-spacing: -0.03em;
 }
 
