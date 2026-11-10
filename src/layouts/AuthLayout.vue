@@ -58,6 +58,7 @@ onBeforeUnmount(() => {
           >
             <RouterLink to="/admin" exact-active-class="is-active" @click="cerrarMenu">Dashboards</RouterLink>
             <RouterLink to="/admin/pedidos" active-class="is-active" @click="cerrarMenu">Pedidos</RouterLink>
+            <RouterLink to="/admin/productos" active-class="is-active" @click="cerrarMenu">Productos</RouterLink>
           </nav>
         </div>
 

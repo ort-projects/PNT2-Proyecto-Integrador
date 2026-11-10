@@ -1,39 +1,75 @@
 <script setup>
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import ProductoCard from './productoCard.vue'
 
-defineProps({
+const props = defineProps({
   productos: {
     type: Array,
     default: () => [],
   },
 })
 
-import { ref } from 'vue'
-
 const carrusel = ref(null)
+const hayAnterior = ref(false)
+const haySiguiente = ref(false)
+
+function actualizarFlechas() {
+  const elemento = carrusel.value
+  if (!elemento) {
+    hayAnterior.value = false
+    haySiguiente.value = false
+    return
+  }
+
+  hayAnterior.value = elemento.scrollLeft > 1
+  haySiguiente.value = elemento.scrollLeft + elemento.clientWidth < elemento.scrollWidth - 1
+}
 
 function desplazar(direccion) {
-  carrusel.value?.scrollBy({
-    left: direccion * 300,
+  const elemento = carrusel.value
+  const primeraTarjeta = elemento?.querySelector('.featured-slide')
+  if (!elemento || !primeraTarjeta) return
+
+  const estilos = getComputedStyle(elemento)
+  const espacio = Number.parseFloat(estilos.columnGap || estilos.gap) || 0
+  const anchoTarjeta = primeraTarjeta.getBoundingClientRect().width
+
+  elemento.scrollBy({
+    left: direccion * (anchoTarjeta + espacio),
     behavior: 'smooth',
   })
 }
+
+watch(() => props.productos.length, async () => {
+  await nextTick()
+  actualizarFlechas()
+})
+
+onMounted(() => {
+  actualizarFlechas()
+  window.addEventListener('resize', actualizarFlechas)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', actualizarFlechas)
+})
 </script>
 
 <template>
-  <section class="featured-section" aria-labelledby="destacados-title">
+  <section class="featured-section" aria-label="Carrusel de productos">
     
     <div class="featured-carousel-wrapper">
       <button
         class="carousel-arrow"
         type="button"
         aria-label="Ver productos anteriores"
+        :disabled="!hayAnterior"
         @click="desplazar(-1)"
       >
         ‹
       </button>
 
-      <div ref="carrusel" class="featured-carousel">
+      <div ref="carrusel" class="featured-carousel" @scroll="actualizarFlechas">
         <div
           v-for="producto in productos"
           :key="producto.id"
@@ -47,6 +83,7 @@ function desplazar(direccion) {
         class="carousel-arrow"
         type="button"
         aria-label="Ver más productos"
+        :disabled="!haySiguiente"
         @click="desplazar(1)"
       >
         ›
@@ -106,6 +143,16 @@ function desplazar(direccion) {
 .carousel-arrow:hover {
   background: var(--color-acento);
   transform: scale(1.05);
+}
+
+.carousel-arrow:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.carousel-arrow:disabled:hover {
+  background: var(--color-superficie);
+  transform: none;
 }
 
 .carousel-arrow:focus-visible {

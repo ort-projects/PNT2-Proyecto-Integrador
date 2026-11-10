@@ -417,19 +417,6 @@ const formatoMoneda = new Intl.NumberFormat('es-AR', {
             Actividad y oportunidades comerciales de {{ anioSeleccionado }}
           </p>
         </div>
-
-        <button
-          class="button is-secondary"
-          type="button"
-          :disabled="cargandoDashboard || cargandoPedidos"
-          @click="actualizarPanel"
-        >
-          {{
-            cargandoDashboard || cargandoPedidos
-              ? 'Actualizando…'
-              : 'Actualizar'
-          }}
-        </button>
       </div>
 
       <div
@@ -444,21 +431,6 @@ const formatoMoneda = new Intl.NumberFormat('es-AR', {
           @click="cargarDashboard"
         >
           Reintentar datos de ventas
-        </button>
-      </div>
-
-      <div
-        v-if="errorPedidos"
-        class="notification is-danger is-light"
-        role="alert"
-      >
-        <p>{{ errorPedidos }}</p>
-        <button
-          class="button is-small is-danger is-light dashboard-retry"
-          type="button"
-          @click="cargarPedidos"
-        >
-          Reintentar listado
         </button>
       </div>
 
@@ -809,8 +781,7 @@ const formatoMoneda = new Intl.NumberFormat('es-AR', {
   line-height: 1.45;
 }
 
-.empty-state,
-.loading-card {
+.empty-state {
   color: var(--color-secundario);
 }
 

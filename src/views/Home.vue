@@ -9,7 +9,7 @@ const cargando = ref(false)
 const error = ref("")
 const productos = ref([])
 const authStore = useAuthStore()
-const productosDestacados = computed(() => productos.value.filter((producto) => producto.destacado).slice(0, 5))
+const productosDestacados = computed(() => productos.value.filter((producto) => producto.destacado))
 const productosOferta = computed(() => productos.value.slice(5, 10))
 const URL = "http://localhost:3000/productos"
 
@@ -51,6 +51,10 @@ onMounted(() => {cargarProductos()})
     
      <p v-else-if="productos.length === 0">
       Todavía no hay productos para mostrar.
+    </p>
+
+    <p v-else-if="productosDestacados.length === 0" class="home-empty-state">
+      Todavía no hay productos destacados. Podés elegirlos desde el panel de administración.
     </p>
 
   <ProductoCarrusel

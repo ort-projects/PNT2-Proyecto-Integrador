@@ -8,12 +8,14 @@ import { pinia } from '../store/pinia.js'
 import Cart from '../views/Cart.vue'
 import MisPedidos from '../views/MisPedidos.vue'
 import PedidosAdmin from '../views/PedidosAdmin.vue'
+import ProductosAdmin from '../views/ProductosAdmin.vue'
 
 const routes = [
   { path: '/', component: Home, meta:{layout:"MainLayout"} },
   { path: '/product/:id', component: ProductDetail, name:"product" },
   { path: '/admin', component: Dashboard, meta: { layout: 'AuthLayout', requireAdminLogin: true } },
   { path: '/admin/pedidos', component: PedidosAdmin, meta: { layout: 'AuthLayout', requireAdminLogin: true } },
+  { path: '/admin/productos', component: ProductosAdmin, meta: { layout: 'AuthLayout', requireAdminLogin: true } },
   { path: '/catalog', component: Catalog, name:"catalog" },
   { path: '/cart', component: Cart, name: 'cart' },
   { path: '/mis-pedidos', component: MisPedidos, name: 'mis-pedidos', meta: { requireLogin: true } },
