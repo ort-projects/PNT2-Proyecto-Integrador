@@ -1,7 +1,6 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useAuthStore } from '../store/auth.js'
-import { ESTADOS_PEDIDO, normalizarEstadoPedido, obtenerEstadoPedido } from '../utils/pedidoEstado.js'
 import { Bar, Line } from 'vue-chartjs'
 import {
   BarElement,
@@ -29,22 +28,11 @@ ChartJS.register(
 const authStore = useAuthStore()
 const anioSeleccionado = new Date().getFullYear()
 const DASHBOARD_URL = 'http://localhost:3000/admin/dashboard'
-const PEDIDOS_URL = 'http://localhost:3000/pedidos/all'
-const USUARIOS_URL = 'http://localhost:3000/usuarios'
 
 const ventas = ref([])
 const productos = ref([])
-const pedidos = ref([])
-const pedidosTodos = ref([])
-const usuarios = ref(null)
 const cargandoDashboard = ref(true)
-const cargandoPedidos = ref(true)
-const cargandoUsuarios = ref(true)
 const errorCarga = ref('')
-const errorPedidos = ref('')
-const errorUsuarios = ref('')
-const estadoSeleccionado = ref('todos')
-const usuarioSeleccionado = ref('todos')
 const productoActualizandoId = ref(null)
 const errorDestacado = ref('')
 
@@ -102,51 +90,8 @@ const cargarDashboard = crearCargaUnica({
   },
 })
 
-const cargarPedidos = crearCargaUnica({
-  cargando: cargandoPedidos,
-  error: errorPedidos,
-  mensajeError: 'No se pudieron cargar los pedidos.',
-  ejecutar: async (mensajeError) => {
-    const parametros = new URLSearchParams({
-      username: usuarioSeleccionado.value,
-    })
-    const urlPedidos =
-      usuarioSeleccionado.value === 'todos'
-        ? PEDIDOS_URL
-        : `${PEDIDOS_URL}?${parametros.toString()}`
-    const data = await fetchJsonConAuth(
-      urlPedidos,
-      mensajeError,
-    )
-
-    if (!Array.isArray(data)) {
-      throw new Error('El servidor devolvió un listado de pedidos inválido.')
-    }
-
-    pedidos.value = data
-    if (usuarioSeleccionado.value === 'todos') {
-      pedidosTodos.value = data
-    }
-  },
-})
-
-const cargarUsuarios = crearCargaUnica({
-  cargando: cargandoUsuarios,
-  error: errorUsuarios,
-  mensajeError: 'No se pudo cargar la lista de usuarios.',
-  ejecutar: async (mensajeError) => {
-    const data = await fetchJsonConAuth(USUARIOS_URL, mensajeError)
-
-    if (!Array.isArray(data)) {
-      throw new Error('El servidor devolvió una lista de usuarios inválida.')
-    }
-
-    usuarios.value = data
-  },
-})
-
 function actualizarPanel() {
-  return Promise.all([cargarDashboard(), cargarPedidos(), cargarUsuarios()])
+  return cargarDashboard()
 }
 
 function alVolverAlPanel() {
@@ -459,148 +404,6 @@ const formatoMoneda = new Intl.NumberFormat('es-AR', {
   currency: 'ARS',
   maximumFractionDigits: 0,
 })
-const formatoMonedaPedido = new Intl.NumberFormat('es-AR', {
-  style: 'currency',
-  currency: 'ARS',
-})
-
-const nombresEstado = (estado) => {
-  const palabras = String(estado ?? '')
-    .trim()
-    .replaceAll('_', ' ')
-    .split(/\s+/)
-    .filter(Boolean)
-
-  if (palabras.length === 0) return 'Sin estado'
-
-  return palabras
-    .map(
-      (palabra) =>
-        palabra.charAt(0).toLocaleUpperCase('es-AR') +
-        palabra.slice(1).toLocaleLowerCase('es-AR'),
-    )
-    .join(' ')
-}
-
-const estadosDisponibles = ESTADOS_PEDIDO
-
-const usuariosDisponibles = computed(() => {
-  const usuariosPorUsername = new Map()
-  const usuariosFuente =
-    usuarios.value ?? pedidosTodos.value.map((pedido) => pedido?.user)
-
-  usuariosFuente.forEach((usuario) => {
-    const username = typeof usuario?.username === 'string'
-      ? usuario.username.trim()
-      : ''
-
-    if (!username || usuariosPorUsername.has(username)) return
-
-    const nombre = nombreUsuario(usuario)
-    usuariosPorUsername.set(username, {
-      username,
-      nombre,
-      etiqueta: nombre === username ? username : `${nombre} (${username})`,
-    })
-  })
-
-  return [...usuariosPorUsername.values()].sort((a, b) =>
-    a.nombre.localeCompare(b.nombre, 'es-AR') ||
-    a.username.localeCompare(b.username, 'es-AR'),
-  )
-})
-
-const pedidosFiltrados = computed(() => {
-  return pedidos.value.filter((pedido) => {
-    const coincideEstado =
-      estadoSeleccionado.value === 'todos' ||
-      normalizarEstadoPedido(pedido.status) === estadoSeleccionado.value
-    const coincideUsuario =
-      usuarioSeleccionado.value === 'todos' ||
-      String(pedido.user?.username ?? '').trim() === usuarioSeleccionado.value
-
-    return coincideEstado && coincideUsuario
-  })
-})
-
-function cambiarUsuario() {
-  void cargarPedidos()
-}
-
-function mensajeSinPedidos() {
-  if (
-    usuarioSeleccionado.value === 'todos' &&
-    estadoSeleccionado.value === 'todos'
-  ) {
-    return 'Todavía no hay pedidos'
-  }
-
-  const filtros = []
-  if (usuarioSeleccionado.value !== 'todos') {
-    const usuario = usuariosDisponibles.value.find(
-      (opcion) => opcion.username === usuarioSeleccionado.value,
-    )
-    filtros.push(`de ${usuario?.nombre ?? usuarioSeleccionado.value}`)
-  }
-  if (estadoSeleccionado.value !== 'todos') {
-    filtros.push(`con estado ${nombresEstado(estadoSeleccionado.value)}`)
-  }
-
-  return `No hay pedidos ${filtros.join(' ')}`
-}
-
-function formatearFechaPedido(fecha) {
-  const fechaPedido = convertirFecha(fecha)
-  if (!fechaPedido) return '—'
-
-  return new Intl.DateTimeFormat('es-AR', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(fechaPedido)
-}
-
-function formatearTotal(total) {
-  const totalNumerico = Number(total)
-  return Number.isFinite(totalNumerico)
-    ? formatoMonedaPedido.format(totalNumerico)
-    : '—'
-}
-
-function nombreUsuario(usuario) {
-  const nombre = [usuario?.name, usuario?.surname]
-    .filter((parte) => typeof parte === 'string' && parte.trim())
-    .map((parte) => parte.trim())
-    .join(' ')
-
-  return nombre || usuario?.username || 'Usuario'
-}
-
-const clasesEstadoAdicionales = {
-  pendiente_pago: 'is-warning estado-pedido--pendiente-pago',
-  pagado: 'is-success estado-pedido--pagado',
-  en_preparacion: 'is-info estado-pedido--en-preparacion',
-  reembolsado: 'is-light estado-pedido--reembolsado',
-}
-
-function claseEstadoPedido(estado) {
-  const normalizado = normalizarEstadoPedido(estado)
-
-  return (
-    obtenerEstadoPedido(estado).clase ||
-    clasesEstadoAdicionales[normalizado] ||
-    ''
-  )
-}
-const pedidosParaMostrar = computed(() =>
-  pedidosFiltrados.value.map((pedido) => ({
-    ...pedido,
-    nombreVisible: nombreUsuario(pedido.user),
-    fechaVisible: formatearFechaPedido(pedido.date),
-    totalVisible: formatearTotal(pedido.total),
-    estadoVisible: nombresEstado(pedido.status),
-    claseEstado: claseEstadoPedido(pedido.status),
-  })),
-)
 </script>
 
 <template>
@@ -836,149 +639,7 @@ const pedidosParaMostrar = computed(() =>
         </div>
       </template>
 
-      <article class="box orders-card">
-        <div class="orders-heading">
-          <div>
-            <h2 class="title is-4">Pedidos de todos los usuarios</h2>
-            <p class="orders-description">
-              Filtrá por usuario y estado o consultá el listado completo.
-            </p>
-          </div>
 
-          <div class="orders-filters">
-            <div class="field orders-filter">
-              <label class="label" for="filtro-usuario-pedido">Usuario</label>
-              <div class="control">
-                <div class="select">
-                  <select
-                    id="filtro-usuario-pedido"
-                    v-model="usuarioSeleccionado"
-                    :disabled="cargandoPedidos || cargandoUsuarios"
-                    @change="cambiarUsuario"
-                  >
-                    <option value="todos">Todos los usuarios</option>
-                    <option
-                      v-for="usuario in usuariosDisponibles"
-                      :key="usuario.username"
-                      :value="usuario.username"
-                    >
-                      {{ usuario.etiqueta }}
-                    </option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div class="field orders-filter">
-              <label class="label" for="filtro-estado-pedido">Estado</label>
-              <div class="control">
-                <div class="select">
-                  <select
-                    id="filtro-estado-pedido"
-                    v-model="estadoSeleccionado"
-                  >
-                    <option value="todos">Todos</option>
-                    <option
-                      v-for="estado in estadosDisponibles"
-                      :key="estado"
-                      :value="estado"
-                    >
-                      {{ nombresEstado(estado) }}
-                    </option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <p v-if="errorUsuarios" class="orders-description" role="status">
-          No se pudo cargar la lista de usuarios, verifique que el usuario sea
-          correcto y tenga pedidos.
-        </p>
-
-        <p
-          v-if="!cargandoPedidos && !errorPedidos"
-          class="orders-count"
-        >
-          {{ pedidosFiltrados.length }}
-          {{ pedidosFiltrados.length === 1 ? 'pedido' : 'pedidos' }}
-        </p>
-
-        <div
-          v-if="cargandoPedidos"
-          class="dashboard-state"
-          role="status"
-          aria-live="polite"
-        >
-          <progress class="progress is-small is-primary" max="100">
-            Cargando pedidos
-          </progress>
-          <p>Cargando listado de pedidos…</p>
-        </div>
-
-        <div v-else-if="errorPedidos" class="dashboard-state">
-          <p>El listado estará disponible cuando se puedan cargar los pedidos.</p>
-        </div>
-
-        <div v-else-if="pedidosFiltrados.length === 0" class="dashboard-state">
-          <p class="title is-5">
-            {{ mensajeSinPedidos() }}
-          </p>
-          <p
-            v-if="
-              pedidos.length === 0 &&
-              usuarioSeleccionado === 'todos' &&
-              estadoSeleccionado === 'todos'
-            "
-          >
-            Cuando se registre una compra, aparecerá en este listado.
-          </p>
-          <p v-else>
-            Elegí otro usuario o estado, o seleccioná “Todos” para volver al
-            listado completo.
-          </p>
-        </div>
-
-        <div v-else class="table-container">
-          <table class="table is-fullwidth is-hoverable orders-table">
-            <thead>
-              <tr>
-                <th scope="col">N.º de pedido</th>
-                <th scope="col">Usuario</th>
-                <th scope="col">Fecha</th>
-                <th scope="col">Total</th>
-                <th scope="col">Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr
-                v-for="pedido in pedidosParaMostrar"
-                :key="pedido.id"
-              >
-                <th scope="row">#{{ pedido.id }}</th>
-                <td>
-                  <span class="order-user-name">
-                    {{ pedido.nombreVisible }}
-                  </span>
-                  <span
-                    v-if="pedido.user?.username"
-                    class="order-username"
-                  >
-                    {{ pedido.user.username }}
-                  </span>
-                </td>
-                <td>{{ pedido.fechaVisible }}</td>
-                <td>{{ pedido.totalVisible }}</td>
-                <td>
-                  <span class="tag is-light" :class="pedido.claseEstado">
-                    {{ pedido.estadoVisible }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </article>
     </div>
   </section>
 </template>
@@ -989,8 +650,7 @@ const pedidosParaMostrar = computed(() =>
 }
 
 .dashboard-heading,
-.chart-heading,
-.orders-heading {
+.chart-heading {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -1035,8 +695,6 @@ const pedidosParaMostrar = computed(() =>
 
 .summary-note,
 .chart-description,
-.orders-description,
-.orders-count,
 .dashboard-state > p {
   color: var(--color-secundario);
   font-size: 0.9rem;
@@ -1047,16 +705,10 @@ const pedidosParaMostrar = computed(() =>
 }
 
 .chart-card,
-.orders-card,
 .recommendation-card {
   height: 100%;
   border: 1px solid var(--color-borde);
 }
-
-.orders-card {
-  margin-top: 1.25rem;
-}
-
 
 .chart-card .title,
 .recommendation-card .title {
@@ -1075,51 +727,6 @@ const pedidosParaMostrar = computed(() =>
 .dashboard-state .progress {
   max-width: 24rem;
   margin: 0 auto 1rem;
-}
-
-.orders-heading {
-  align-items: flex-end;
-  margin-bottom: 0.75rem;
-}
-
-.orders-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.orders-filter {
-  flex: 1 1 12rem;
-  min-width: 12rem;
-  margin-bottom: 0;
-}
-
-.orders-filter .select,
-.orders-filter select {
-  width: 100%;
-}
-
-.orders-count {
-  margin-bottom: 0.5rem;
-}
-
-.orders-table th,
-.orders-table td {
-  vertical-align: middle;
-}
-
-.order-user-name,
-.order-username {
-  display: block;
-}
-
-.order-user-name {
-  font-weight: 600;
-}
-
-.order-username {
-  color: var(--color-secundario);
-  font-size: 0.9rem;
 }
 
 .chart-container {
@@ -1208,13 +815,8 @@ const pedidosParaMostrar = computed(() =>
 }
 
 @media (max-width: 768px) {
-  .dashboard-heading,
-  .orders-heading {
+  .dashboard-heading {
     flex-direction: column;
-  }
-
-  .orders-filter {
-    width: 100%;
   }
 
   .chart-container {
