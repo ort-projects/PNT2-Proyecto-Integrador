@@ -21,7 +21,7 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 | 9 | Mejorar la UI del modal de login | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 10 | Admin: hacer funcionar el filtro de pedidos por estado | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente PR](https://img.shields.io/badge/-pendiente%20PR-f9a825?style=flat-square) |
 | 11 | Mejorar la paleta de colores y los botones del sitio | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente PR](https://img.shields.io/badge/-pendiente%20PR-f9a825?style=flat-square) |
-| 12 | Acceso al catálogo: link en el header y "Ver todos" en Home | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
+| 12 | Acceso al catálogo: link en el header y "Ver todos" en Home | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
 | 13 | Admin: paginar el listado de pedidos | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 
 ### Referencias
@@ -368,7 +368,7 @@ El modal se dispara por **store** (`src/store/auth.js`):
 
 ---
 
-## 🔵 Tarea 12 — Acceso al catálogo
+## ✅ Tarea 12 — Acceso al catálogo
 
 | Prioridad | Responsable | Vista / archivos |
 |:---------:|:-----------:|------------------|
@@ -389,10 +389,10 @@ El modal se dispara por **store** (`src/store/auth.js`):
 
 **Criterios de aceptación**
 
-- [ ] Link al catálogo visible en el header, también en celular.
-- [ ] Botón **Ver todos los productos** en Home que lleva a `/catalog`.
-- [ ] Al entrar desde el link o el botón se muestran todos los productos, sin filtro.
-- [ ] El buscador del header sigue funcionando como hasta ahora.
+- [x] Link al catálogo visible en el header, también en celular.
+- [x] Botón **Ver todos los productos** en Home que lleva a `/catalog`.
+- [x] Al entrar desde el link o el botón se muestran todos los productos, sin filtro.
+- [x] El buscador del header sigue funcionando como hasta ahora.
 
 ---
 

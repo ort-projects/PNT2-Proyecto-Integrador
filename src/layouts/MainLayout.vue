@@ -25,6 +25,10 @@ function buscarProductos() {
     query: busqueda ? { busqueda } : {},
   })
 }
+function irAlCatalogo() {
+  catalogStore.busqueda = ''
+}
+
 function cerrarMenuCuenta(event) {
   event.currentTarget.open = false
 }
@@ -53,7 +57,14 @@ function cerrarMenuCuenta(event) {
           </svg>
         </form>
         <div class="header-actions">
-          
+  <RouterLink
+    :to="{ name: 'catalog' }"
+    class="catalog-link"
+    @click="irAlCatalogo"
+  >
+    Productos
+  </RouterLink>
+
   <RouterLink
     to="/cart"
     class="cart-indicator"
@@ -188,6 +199,18 @@ function cerrarMenuCuenta(event) {
   align-items: center;
   justify-self: end;
   gap: 1rem;
+}
+
+.catalog-link {
+  color: var(--color-texto);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.catalog-link:hover,
+.catalog-link.router-link-active {
+  color: var(--color-azul-lavanda);
 }
 
 .cart-indicator {

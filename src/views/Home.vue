@@ -84,7 +84,18 @@ onMounted(() => {cargarProductos()})
  />
  </div>
 
+  <div class="container home-ver-todos">
+    <RouterLink :to="{ name: 'catalog' }" class="button is-primary">
+      Ver todos los productos
+    </RouterLink>
+  </div>
 
 </template>
 
-<style scoped></style>
+<style scoped>
+.home-ver-todos {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+</style>
