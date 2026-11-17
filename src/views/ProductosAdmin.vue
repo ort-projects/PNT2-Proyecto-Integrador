@@ -219,7 +219,7 @@ const formatoMoneda = new Intl.NumberFormat('es-AR', {
             </article>
           </div>
 
-          <nav v-if="totalPaginas > 1" class="pagination products-pagination" role="navigation" aria-label="Paginación de productos">
+          <nav v-if="totalPaginas > 1" class="pagination pagination-modarg products-pagination" role="navigation" aria-label="Paginación de productos">
             <button class="pagination-previous" type="button" :disabled="paginaActual === 1" @click="paginaActual--">Anterior</button>
             <button class="pagination-next" type="button" :disabled="paginaActual === totalPaginas" @click="paginaActual++">Siguiente</button>
             <ul class="pagination-list">
@@ -235,6 +235,7 @@ const formatoMoneda = new Intl.NumberFormat('es-AR', {
               </li>
             </ul>
           </nav>
+          <p v-if="totalPaginas > 1" class="pagination-page-status" aria-live="polite">Página {{ paginaActual }} de {{ totalPaginas }}</p>
         </template>
       </article>
     </div>
@@ -265,7 +266,6 @@ const formatoMoneda = new Intl.NumberFormat('es-AR', {
 .highlight-button { width: 100%; margin-top: auto; }
 .highlight-button.is-highlighted { border-color: var(--color-acento); background: var(--color-acento); color: var(--color-azul-noche); }
 .products-pagination { justify-content: center; margin-top: 1.75rem; }
-.pagination-link.is-current { border-color: var(--color-azul-noche); background: var(--color-azul-noche); }
 .products-admin-card :deep(.notification) { margin-bottom: 1rem; }
 
 @media (max-width: 960px) {
