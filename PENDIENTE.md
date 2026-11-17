@@ -18,11 +18,11 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 | 6 | Admin: filtro de pedidos por usuario | ![Baja](https://img.shields.io/badge/prioridad-BAJA-28a745?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
 | 7 | Admin: generar oferta semanal | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Gonza](https://img.shields.io/badge/-Gonza-2da44e?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 8 | Home: mostrar ofertas semanales | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Gonza](https://img.shields.io/badge/-Gonza-2da44e?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
-| 9 | Mejorar la UI del modal de login | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
-| 10 | Admin: hacer funcionar el filtro de pedidos por estado | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente PR](https://img.shields.io/badge/-pendiente%20PR-f9a825?style=flat-square) |
-| 11 | Mejorar la paleta de colores y los botones del sitio | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente PR](https://img.shields.io/badge/-pendiente%20PR-f9a825?style=flat-square) |
-| 12 | Acceso al catálogo: link en el header y "Ver todos" en Home | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
-| 13 | Admin: paginar el listado de pedidos | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
+| 9 | Mejorar la UI del modal de login | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
+| 10 | Admin: hacer funcionar el filtro de pedidos por estado | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
+| 11 | Mejorar la paleta de colores y los botones del sitio | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
+| 12 | Acceso al catálogo: link en el header y "Ver todos" en Home | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
+| 13 | Admin: paginar y ordenar el listado de pedidos | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
 
 ### Referencias
 
@@ -219,7 +219,7 @@ El modal se dispara por **store** (`src/store/auth.js`):
 
 ---
 
-## 🟢 Tarea 6 — Admin: filtro de pedidos por usuario
+## ✅ Tarea 6 — Admin: filtro de pedidos por usuario
 
 | Prioridad | Responsable | Vista / archivos |
 |:---------:|:-----------:|------------------|
@@ -299,7 +299,7 @@ El modal se dispara por **store** (`src/store/auth.js`):
 
 ---
 
-## 🟣 Tarea 9 — Mejorar la UI del modal de login
+## ✅ Tarea 9 — Mejorar la UI del modal de login
 
 | Prioridad | Responsable | Vista / archivos |
 |:---------:|:-----------:|------------------|
@@ -322,7 +322,7 @@ El modal se dispara por **store** (`src/store/auth.js`):
 
 ---
 
-## 🟣 Tarea 10 — Admin: hacer funcionar el filtro de pedidos por estado
+## ✅ Tarea 10 — Admin: hacer funcionar el filtro de pedidos por estado
 
 | Prioridad | Responsable | Vista / archivos |
 |:---------:|:-----------:|------------------|
@@ -346,7 +346,7 @@ El modal se dispara por **store** (`src/store/auth.js`):
 
 ---
 
-## 🟣 Tarea 11 — Mejorar la paleta de colores y los botones del sitio
+## ✅ Tarea 11 — Mejorar la paleta de colores y los botones del sitio
 
 | Prioridad | Responsable | Vista / archivos |
 |:---------:|:-----------:|------------------|
@@ -396,7 +396,7 @@ El modal se dispara por **store** (`src/store/auth.js`):
 
 ---
 
-## 🟣 Tarea 13 — Admin: paginar y ordenar el listado de pedidos
+## ✅ Tarea 13 — Admin: paginar y ordenar el listado de pedidos
 
 | Prioridad | Responsable | Vista / archivos |
 |:---------:|:-----------:|------------------|
