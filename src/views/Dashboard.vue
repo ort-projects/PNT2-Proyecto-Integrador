@@ -389,6 +389,14 @@ const opcionesBarras = {
 const opcionesBarrasHorizontales = {
   ...opcionesBarras,
   indexAxis: 'y',
+  plugins: {
+    ...opcionesBarras.plugins,
+    tooltip: {
+      callbacks: {
+        label: (context) => String(context.parsed.x) + ' unidades',
+      },
+    },
+  },
   scales: {
     x: {
       beginAtZero: true,
