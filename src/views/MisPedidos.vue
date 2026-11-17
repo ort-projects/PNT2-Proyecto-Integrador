@@ -1,9 +1,10 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useAuthStore } from '../store/auth.js'
 import { obtenerEstadoPedido } from '../utils/pedidoEstado.js'
 
 const authStore = useAuthStore()
+const TAMANIO_PAGINA = 10
 
 // Viene en true cuando se llega desde el carrito después de un 201 en POST /pedidos (Tarea 2).
 const pedidoRegistrado = ref(Boolean(window.history.state?.pedidoRegistrado))
@@ -17,8 +18,28 @@ const pedidos = ref([])
 const cargando = ref(false)
 const error = ref('')
 const sesionVencida = ref(false)
+const paginaActual = ref(1)
 
+const totalPaginas = computed(() => Math.max(1, Math.ceil(pedidos.value.length / TAMANIO_PAGINA)))
+const pedidosPagina = computed(() => {
+  const inicio = (paginaActual.value - 1) * TAMANIO_PAGINA
+  return pedidos.value.slice(inicio, inicio + TAMANIO_PAGINA)
+})
+const paginasVisibles = computed(() => {
+  const inicio = Math.max(1, Math.min(paginaActual.value - 2, totalPaginas.value - 4))
+  return Array.from({ length: Math.min(5, totalPaginas.value) }, (_, indice) => inicio + indice)
+})
+const rangoPedidos = computed(() => {
+  const total = pedidos.value.length
+  if (!total) return '0 pedidos'
+  const inicio = (paginaActual.value - 1) * TAMANIO_PAGINA + 1
+  const fin = Math.min(paginaActual.value * TAMANIO_PAGINA, total)
+  return `Mostrando ${inicio}–${fin} de ${total} ${total === 1 ? 'pedido' : 'pedidos'}`
+})
 
+watch(totalPaginas, (total) => {
+  if (paginaActual.value > total) paginaActual.value = total
+})
 
 const formatoFecha = new Intl.DateTimeFormat('es-AR', {
   dateStyle: 'short',
@@ -124,6 +145,8 @@ function iniciarSesion() {
       </div>
 
       <div v-else class="box pedidos-box">
+        <p class="orders-count">{{ pedidos.length }} {{ pedidos.length === 1 ? 'pedido' : 'pedidos' }}</p>
+        <p class="pagination-range" aria-live="polite">{{ rangoPedidos }}</p>
         <div class="table-container">
           <table class="table is-fullwidth pedidos-table">
             <thead>
@@ -137,7 +160,7 @@ function iniciarSesion() {
             </thead>
 
             <tbody>
-              <tr v-for="pedido in pedidos" :key="pedido.id">
+              <tr v-for="pedido in pedidosPagina" :key="pedido.id">
                 <th scope="row">#{{ pedido.id }}</th>
                 <td class="pedido-fecha">{{ formatearFecha(pedido.date) }}</td>
                 <td>
@@ -173,6 +196,24 @@ function iniciarSesion() {
             </tbody>
           </table>
         </div>
+
+        <nav v-if="totalPaginas > 1" class="pagination pagination-modarg" role="navigation" aria-label="Paginación de mis pedidos">
+          <button class="pagination-previous" type="button" :disabled="paginaActual === 1" @click="paginaActual--">Anterior</button>
+          <button class="pagination-next" type="button" :disabled="paginaActual === totalPaginas" @click="paginaActual++">Siguiente</button>
+          <ul class="pagination-list">
+            <li v-for="pagina in paginasVisibles" :key="pagina">
+              <button
+                class="pagination-link"
+                :class="{ 'is-current': pagina === paginaActual }"
+                type="button"
+                :aria-label="`Ir a la página ${pagina}`"
+                :aria-current="pagina === paginaActual ? 'page' : undefined"
+                @click="paginaActual = pagina"
+              >{{ pagina }}</button>
+            </li>
+          </ul>
+        </nav>
+        <p v-if="totalPaginas > 1" class="pagination-page-status" aria-live="polite">Página {{ paginaActual }} de {{ totalPaginas }}</p>
       </div>
     </div>
   </section>
@@ -183,6 +224,23 @@ function iniciarSesion() {
   padding: 0;
   overflow: hidden;
   border: 1px solid var(--color-borde);
+}
+
+.orders-count,
+.pagination-range {
+  margin: 1rem 1.25rem 0;
+  color: var(--color-secundario);
+  font-size: .9rem;
+}
+
+.pagination-range { margin-top: .25rem; }
+
+.pedidos-box :deep(.pagination.pagination-modarg) {
+  margin: 1rem 1.25rem 0;
+}
+
+.pedidos-box :deep(.pagination-page-status) {
+  margin: .5rem 1.25rem 1rem;
 }
 
 .pedidos-table {
