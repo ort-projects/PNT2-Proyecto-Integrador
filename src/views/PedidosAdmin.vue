@@ -4,6 +4,7 @@ import { useAuthStore } from '../store/auth.js'
 import { ESTADOS_PEDIDO, normalizarEstadoPedido, obtenerEstadoPedido } from '../utils/pedidoEstado.js'
 
 const authStore = useAuthStore()
+const TAMANIO_PAGINA = 10
 const PEDIDOS_URL = 'http://localhost:3000/pedidos/all'
 const USUARIOS_URL = 'http://localhost:3000/usuarios'
 
@@ -16,6 +17,8 @@ const errorPedidos = ref('')
 const errorUsuarios = ref('')
 const estadoSeleccionado = ref('todos')
 const usuarioSeleccionado = ref('todos')
+const ordenSeleccionado = ref('recientes')
+const paginaActual = ref(1)
 
 async function fetchJsonConAuth(url, mensajeError) {
   const response = await authStore.fetchWithAuth(url)
@@ -111,6 +114,47 @@ const pedidosFiltrados = computed(() => pedidos.value.filter((pedido) => {
   return coincideEstado && coincideUsuario
 }))
 
+function timestampPedido(pedido) {
+  const fecha = convertirFecha(pedido?.date)
+  return fecha?.getTime() ?? 0
+}
+
+function compararIds(a, b) {
+  const diferenciaNumerica = Number(b.id) - Number(a.id)
+  return Number.isFinite(diferenciaNumerica) && diferenciaNumerica !== 0
+    ? diferenciaNumerica
+    : String(b.id ?? '').localeCompare(String(a.id ?? ''), 'es-AR')
+}
+
+const pedidosOrdenados = computed(() => [...pedidosFiltrados.value].sort((a, b) => {
+  const diferenciaFecha = timestampPedido(b) - timestampPedido(a)
+  const comparacion = diferenciaFecha || compararIds(a, b)
+  return ordenSeleccionado.value === 'recientes' ? comparacion : -comparacion
+}))
+const totalPaginas = computed(() => Math.max(1, Math.ceil(pedidosOrdenados.value.length / TAMANIO_PAGINA)))
+const pedidosPagina = computed(() => {
+  const inicio = (paginaActual.value - 1) * TAMANIO_PAGINA
+  return pedidosOrdenados.value.slice(inicio, inicio + TAMANIO_PAGINA)
+})
+const paginasVisibles = computed(() => {
+  const inicio = Math.max(1, Math.min(paginaActual.value - 2, totalPaginas.value - 4))
+  return Array.from({ length: Math.min(5, totalPaginas.value) }, (_, indice) => inicio + indice)
+})
+const rangoPedidos = computed(() => {
+  const total = pedidosFiltrados.value.length
+  if (!total) return '0 pedidos'
+  const inicio = (paginaActual.value - 1) * TAMANIO_PAGINA + 1
+  const fin = Math.min(paginaActual.value * TAMANIO_PAGINA, total)
+  return `Mostrando ${inicio}–${fin} de ${total} ${total === 1 ? 'pedido' : 'pedidos'}`
+})
+
+watch([estadoSeleccionado, usuarioSeleccionado, ordenSeleccionado], () => {
+  paginaActual.value = 1
+})
+watch(totalPaginas, (total) => {
+  if (paginaActual.value > total) paginaActual.value = total
+})
+
 function mensajeSinPedidos() {
   if (usuarioSeleccionado.value === 'todos' && estadoSeleccionado.value === 'todos') return 'Todavía no hay pedidos'
   const filtros = []
@@ -147,7 +191,7 @@ function claseEstadoPedido(estado) {
   const normalizado = normalizarEstadoPedido(estado)
   return obtenerEstadoPedido(estado).clase || clasesEstadoAdicionales[normalizado] || ''
 }
-const pedidosParaMostrar = computed(() => pedidosFiltrados.value.map((pedido) => ({
+const pedidosParaMostrar = computed(() => pedidosPagina.value.map((pedido) => ({
   ...pedido,
   nombreVisible: nombreUsuario(pedido.user),
   fechaVisible: formatearFechaPedido(pedido.date),
@@ -172,7 +216,6 @@ const pedidosParaMostrar = computed(() => pedidosFiltrados.value.map((pedido) =>
         <div class="orders-heading">
           <div>
             <h2 class="title is-4">Listado de pedidos</h2>
-            <p class="orders-description">Filtrá por usuario y estado o consultá el listado completo.</p>
           </div>
           <div class="orders-filters">
             <div class="field orders-filter">
@@ -193,11 +236,21 @@ const pedidosParaMostrar = computed(() => pedidosFiltrados.value.map((pedido) =>
                 </select>
               </div></div>
             </div>
+            <div class="field orders-filter">
+              <label class="label" for="orden-pedidos-admin">Ordenar por</label>
+              <div class="control"><div class="select">
+                <select id="orden-pedidos-admin" v-model="ordenSeleccionado">
+                  <option value="recientes">Más recientes</option>
+                  <option value="antiguos">Más antiguos</option>
+                </select>
+              </div></div>
+            </div>
           </div>
         </div>
 
         <p v-if="errorUsuarios" class="orders-description" role="status">No se pudo cargar la lista de usuarios; verificá que el usuario sea correcto y tenga pedidos.</p>
         <p v-if="!cargandoPedidos && !errorPedidos" class="orders-count">{{ pedidosFiltrados.length }} {{ pedidosFiltrados.length === 1 ? 'pedido' : 'pedidos' }}</p>
+        <p v-if="!cargandoPedidos && !errorPedidos && pedidosFiltrados.length > 0" class="orders-description" aria-live="polite">{{ rangoPedidos }}</p>
         <div v-if="cargandoPedidos" class="dashboard-state" role="status" aria-live="polite">
           <progress class="progress is-small is-primary" max="100">Cargando pedidos</progress>
           <p>Cargando listado de pedidos…</p>
@@ -208,19 +261,39 @@ const pedidosParaMostrar = computed(() => pedidosFiltrados.value.map((pedido) =>
           <p v-if="pedidos.length === 0 && usuarioSeleccionado === 'todos' && estadoSeleccionado === 'todos'">Cuando se registre una compra, aparecerá en este listado.</p>
           <p v-else>Elegí otro usuario o estado, o seleccioná “Todos” para volver al listado completo.</p>
         </div>
-        <div v-else class="table-container">
-          <table class="table is-fullwidth is-hoverable orders-table">
-            <thead><tr><th scope="col">N.º de pedido</th><th scope="col">Usuario</th><th scope="col">Fecha</th><th scope="col">Total</th><th scope="col">Estado</th></tr></thead>
-            <tbody>
-              <tr v-for="pedido in pedidosParaMostrar" :key="pedido.id">
-                <th scope="row">#{{ pedido.id }}</th>
-                <td><span class="order-user-name">{{ pedido.nombreVisible }}</span><span v-if="pedido.user?.username" class="order-username">{{ pedido.user.username }}</span></td>
-                <td>{{ pedido.fechaVisible }}</td><td>{{ pedido.totalVisible }}</td>
-                <td><span class="tag is-light" :class="pedido.claseEstado">{{ pedido.estadoVisible }}</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <template v-else>
+          <div class="table-container">
+            <table class="table is-fullwidth is-hoverable orders-table">
+              <thead><tr><th scope="col">N.º de pedido</th><th scope="col">Usuario</th><th scope="col">Fecha</th><th scope="col">Total</th><th scope="col">Estado</th></tr></thead>
+              <tbody>
+                <tr v-for="pedido in pedidosParaMostrar" :key="pedido.id">
+                  <th scope="row">#{{ pedido.id }}</th>
+                  <td><span class="order-user-name">{{ pedido.nombreVisible }}</span><span v-if="pedido.user?.username" class="order-username">{{ pedido.user.username }}</span></td>
+                  <td>{{ pedido.fechaVisible }}</td><td>{{ pedido.totalVisible }}</td>
+                  <td><span class="tag is-light" :class="pedido.claseEstado">{{ pedido.estadoVisible }}</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <nav v-if="totalPaginas > 1" class="pagination pagination-modarg" role="navigation" aria-label="Paginación de pedidos">
+            <button class="pagination-previous" type="button" :disabled="paginaActual === 1" @click="paginaActual--">Anterior</button>
+            <button class="pagination-next" type="button" :disabled="paginaActual === totalPaginas" @click="paginaActual++">Siguiente</button>
+            <ul class="pagination-list">
+              <li v-for="pagina in paginasVisibles" :key="pagina">
+                <button
+                  class="pagination-link"
+                  :class="{ 'is-current': pagina === paginaActual }"
+                  type="button"
+                  :aria-label="`Ir a la página ${pagina}`"
+                  :aria-current="pagina === paginaActual ? 'page' : undefined"
+                  @click="paginaActual = pagina"
+                >{{ pagina }}</button>
+              </li>
+            </ul>
+          </nav>
+          <p v-if="totalPaginas > 1" class="pagination-page-status" aria-live="polite">Página {{ paginaActual }} de {{ totalPaginas }}</p>
+        </template>
       </article>
     </div>
   </section>
@@ -243,5 +316,8 @@ const pedidosParaMostrar = computed(() => pedidosFiltrados.value.map((pedido) =>
 .order-username { color: var(--color-secundario); font-size: .9rem; }
 .dashboard-state { padding: 2.5rem 1rem; text-align: center; }
 .dashboard-state .progress { max-width: 24rem; margin: 0 auto 1rem; }
-@media (max-width: 768px) { .orders-heading { flex-direction: column; align-items: stretch; } .orders-filter { width: 100%; } }
+@media (max-width: 768px) {
+  .orders-heading { flex-direction: column; align-items: stretch; }
+  .orders-filter { width: 100%; }
+}
 </style>

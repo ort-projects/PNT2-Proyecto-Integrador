@@ -15,14 +15,14 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 | 3 | Mis pedidos: listado de pedidos del usuario logueado | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
 | 4 | Modal de login / crear usuario (ante `401`) | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
 | 5 | Admin: listado de pedidos de todos los usuarios | ![Alta](https://img.shields.io/badge/prioridad-ALTA-d73a49?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
-| 6 | Admin: filtro de pedidos por usuario | ![Baja](https://img.shields.io/badge/prioridad-BAJA-28a745?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente PR](https://img.shields.io/badge/-pendiente%20PR-f9a825?style=flat-square) |
+| 6 | Admin: filtro de pedidos por usuario | ![Baja](https://img.shields.io/badge/prioridad-BAJA-28a745?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
 | 7 | Admin: generar oferta semanal | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Gonza](https://img.shields.io/badge/-Gonza-2da44e?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 8 | Home: mostrar ofertas semanales | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Gonza](https://img.shields.io/badge/-Gonza-2da44e?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 9 | Mejorar la UI del modal de login | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
-| 10 | Admin: hacer funcionar el filtro de pedidos por estado | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente PR](https://img.shields.io/badge/-pendiente%20PR-f9a825?style=flat-square) |
-| 11 | Mejorar la paleta de colores y los botones del sitio | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente PR](https://img.shields.io/badge/-pendiente%20PR-f9a825?style=flat-square) |
+| 10 | Admin: hacer funcionar el filtro de pedidos por estado | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
+| 11 | Mejorar la paleta de colores y los botones del sitio | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
 | 12 | Acceso al catálogo: link en el header y "Ver todos" en Home | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
-| 13 | Admin: paginar el listado de pedidos | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
+| 13 | Admin: paginar y ordenar el listado de pedidos | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente PR](https://img.shields.io/badge/-pendiente%20PR-f9a825?style=flat-square) |
 
 ### Referencias
 
@@ -396,30 +396,32 @@ El modal se dispara por **store** (`src/store/auth.js`):
 
 ---
 
-## 🟣 Tarea 13 — Admin: paginar el listado de pedidos
+## 🟣 Tarea 13 — Admin: paginar y ordenar el listado de pedidos
 
 | Prioridad | Responsable | Vista / archivos |
 |:---------:|:-----------:|------------------|
-| ![A definir](https://img.shields.io/badge/-A%20DEFINIR-lightgrey?style=flat-square) | 🟣 Dana | `src/views/Dashboard.vue` (tabla de la Tarea 5) |
+| ![A definir](https://img.shields.io/badge/-A%20DEFINIR-lightgrey?style=flat-square) | 🟣 Dana | `src/views/PedidosAdmin.vue` |
 
-**Objetivo:** que la tabla de pedidos del admin no muestre todos los pedidos de una vez, sino de a páginas.
+**Objetivo:** que el administrador pueda recorrer los pedidos de a páginas y ordenar el listado por fecha.
 
 **Requisitos**
 
-- Mostrar una cantidad fija de pedidos por página (por ejemplo, 10).
-- Controles de paginación debajo de la tabla: anterior, siguiente y número de página.
-- La paginación se aplica sobre el listado ya filtrado (`pedidosFiltrados`), así que funciona junto con los filtros por estado (Tarea 10) y por usuario (Tarea 6).
+- Mostrar 10 pedidos por página.
+- Controles debajo de la tabla para ir a la página anterior o siguiente y elegir un número de página.
+- La paginación se aplica sobre el listado ya filtrado (`pedidosFiltrados`), junto con los filtros por estado (Tarea 10) y por usuario (Tarea 6).
+- Permitir ordenar por pedidos más recientes o más antiguos, mostrando primero los más recientes.
 
 **Criterios de aceptación**
 
-- [ ] La tabla muestra como máximo la cantidad de pedidos por página definida.
-- [ ] Se puede ir a la página anterior y a la siguiente; los botones se deshabilitan en la primera y la última página.
-- [ ] Se indica la página actual y el total de páginas (por ejemplo, "Página 2 de 5").
-- [ ] Al cambiar un filtro se vuelve a la página 1.
-- [ ] El contador de pedidos sigue mostrando el total filtrado, no solo los de la página.
-- [ ] Si hay una sola página, los controles no se muestran.
+- [x] La tabla muestra como máximo 10 pedidos por página.
+- [x] Se puede ir a la página anterior y a la siguiente; los botones se deshabilitan en la primera y la última página.
+- [x] Se puede elegir un número de página y se indica la página actual y el total de páginas.
+- [x] Al cambiar un filtro u orden se vuelve a la página 1.
+- [x] El contador de pedidos sigue mostrando el total filtrado, no solo los de la página.
+- [x] Si hay una sola página, los controles no se muestran.
+- [x] Se puede ordenar por pedidos más recientes o más antiguos.
 
-> 💡 **Backend:** el panel pide `GET /pedidos/all` sin parámetros y recibe todos los pedidos de una vez, así que se puede paginar del lado del cliente. Si el volumen crece, se puede pedir al backend `?page=` y `?limit=`.
+> 💡 **Backend:** el panel pide `GET /pedidos/all` y recibe todos los pedidos de una vez, así que se pagina del lado del cliente. Si el volumen crece, se puede pedir al backend `?page=` y `?limit=`.
 
 ---
 
