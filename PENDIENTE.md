@@ -19,10 +19,10 @@ Distribución de tareas del equipo para cerrar el flujo de compra y la gestión 
 | 7 | Admin: generar oferta semanal | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Gonza](https://img.shields.io/badge/-Gonza-2da44e?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 8 | Home: mostrar ofertas semanales | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Gonza](https://img.shields.io/badge/-Gonza-2da44e?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 | 9 | Mejorar la UI del modal de login | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
-| 10 | Admin: hacer funcionar el filtro de pedidos por estado | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
-| 11 | Mejorar la paleta de colores y los botones del sitio | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
-| 12 | Acceso al catálogo: link en el header y "Ver todos" en Home | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Hecho](https://img.shields.io/badge/-hecho-28a745?style=flat-square) |
-| 13 | Admin: paginar y ordenar el listado de pedidos | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente PR](https://img.shields.io/badge/-pendiente%20PR-f9a825?style=flat-square) |
+| 10 | Admin: hacer funcionar el filtro de pedidos por estado | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente PR](https://img.shields.io/badge/-pendiente%20PR-f9a825?style=flat-square) |
+| 11 | Mejorar la paleta de colores y los botones del sitio | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente PR](https://img.shields.io/badge/-pendiente%20PR-f9a825?style=flat-square) |
+| 12 | Acceso al catálogo: link en el header y "Ver todos" en Home | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Gabriel](https://img.shields.io/badge/-Gabriel-0366d6?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
+| 13 | Admin: paginar el listado de pedidos | ![A definir](https://img.shields.io/badge/prioridad-A%20DEFINIR-lightgrey?style=flat-square) | ![Dana](https://img.shields.io/badge/-Dana-6f42c1?style=flat-square) | ![Pendiente](https://img.shields.io/badge/-pendiente-lightgrey?style=flat-square) |
 
 ### Referencias
 
@@ -315,10 +315,10 @@ El modal se dispara por **store** (`src/store/auth.js`):
 
 **Criterios de aceptación**
 
-- [ ] El modal se ve bien en escritorio y en celular.
-- [ ] Los mensajes de error y de validación se distinguen bien y quedan junto al campo que corresponde.
-- [ ] Los botones muestran el estado de carga mientras se envía el formulario.
-- [ ] No se rompe nada del flujo de la Tarea 4 (abrir, cerrar, login, registro y `redirect`).
+- [x] El modal se ve bien en escritorio y en celular.
+- [x] Los mensajes de error y de validación se distinguen bien y quedan junto al campo que corresponde.
+- [x] Los botones muestran el estado de carga mientras se envía el formulario.
+- [x] No se rompe nada del flujo de la Tarea 4 (abrir, cerrar, login, registro y `redirect`).
 
 ---
 

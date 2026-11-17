@@ -1,28 +1,23 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useAuthStore } from '../store/auth.js'
+import AuthField from './AuthField.vue'
 
 const props = defineProps({
-  open: {
-    type: Boolean,
-    default: false,
-  },
-  // Texto opcional según desde dónde se abrió (carrito, panel, sesión vencida).
-  mensaje: {
-    type: String,
-    default: '',
-  },
+  open: { type: Boolean, default: false },
+  mensaje: { type: String, default: '' },
 })
 
 const emit = defineEmits(['close', 'authenticated'])
-
 const authStore = useAuthStore()
+
 const modo = ref('login')
 const email = ref('')
 const nombre = ref('')
 const apellido = ref('')
 const password = ref('')
 const error = ref('')
+const erroresCampos = ref({})
 const cargando = ref(false)
 
 watch(
@@ -30,23 +25,58 @@ watch(
   (open) => {
     if (open) {
       modo.value = 'login'
-      error.value = ''
+      limpiarErrores()
     }
   },
 )
 
+function limpiarErrores() {
+  error.value = ''
+  erroresCampos.value = {}
+}
+
+function limpiarErrorCampo(campo) {
+  erroresCampos.value[campo] = ''
+  error.value = ''
+}
+
 function cambiarModo(nuevoModo) {
   modo.value = nuevoModo
-  error.value = ''
+  limpiarErrores()
+}
+
+function validarCampos() {
+  const errores = {}
+  const username = email.value.trim()
+
+  if (modo.value === 'registro') {
+    if (!nombre.value.trim()) {
+      errores.nombre = 'Ingresá tu nombre.'
+    }
+    if (!apellido.value.trim()) {
+      errores.apellido = 'Ingresá tu apellido.'
+    }
+  }
+
+  if (!username) {
+    errores.email = 'Ingresá tu correo electrónico.'
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username)) {
+    errores.email = 'Ingresá un correo electrónico válido.'
+  }
+
+  if (!password.value) {
+    errores.password = 'Ingresá tu contraseña.'
+  } else if (modo.value === 'registro' && password.value.length < 8) {
+    errores.password = 'La contraseña debe tener al menos 8 caracteres.'
+  }
+
+  erroresCampos.value = errores
+  return Object.keys(errores).length > 0
 }
 
 async function enviarFormulario() {
   error.value = ''
-
-  if (modo.value === 'registro' && (!nombre.value.trim() || !apellido.value.trim())) {
-    error.value = 'Completá tu nombre y apellido.'
-    return
-  }
+  if (validarCampos()) return
 
   cargando.value = true
 
@@ -66,12 +96,13 @@ async function enviarFormulario() {
 
     emit('authenticated')
   } catch (err) {
-    error.value =
-      err instanceof Error
-        ? err.message
-        : modo.value === 'registro'
-          ? 'No se pudo crear la cuenta.'
-          : 'No se pudo iniciar sesión.'
+    if (err instanceof Error) {
+      error.value = err.message
+    } else {
+      error.value = modo.value === 'registro'
+        ? 'No se pudo crear la cuenta.'
+        : 'No se pudo iniciar sesión.'
+    }
   } finally {
     cargando.value = false
   }
@@ -94,113 +125,120 @@ async function enviarFormulario() {
     ></button>
 
     <div class="modal-card">
-      <header class="modal-card-head">
-        <h2 id="auth-modal-title" class="modal-card-title">
-          {{ modo === 'login' ? 'Iniciar sesión' : 'Crear usuario' }}
-        </h2>
+      <header class="modal-card-head auth-modal__head">
+        <div>
+          <p class="auth-modal__eyebrow">Tu cuenta</p>
+          <h2 id="auth-modal-title" class="modal-card-title auth-modal__title">
+            {{ modo === 'login' ? 'Iniciar sesión' : 'Crear usuario' }}
+          </h2>
+        </div>
         <button
-          class="delete"
+          class="delete auth-modal__close"
           type="button"
           aria-label="Cerrar"
           @click="emit('close')"
         ></button>
       </header>
 
-      <section class="modal-card-body">
-        <p class="auth-modal-intro">
+      <section class="modal-card-body auth-modal__body">
+        <p class="auth-modal__intro">
           {{ mensaje || (modo === 'login'
             ? 'Ingresá con tu correo y contraseña.'
             : 'Completá tus datos para crear tu cuenta.') }}
         </p>
 
-        <div class="tabs is-toggle is-fullwidth auth-tabs">
+        <div class="tabs is-toggle is-fullwidth auth-modal__tabs">
           <ul>
             <li :class="{ 'is-active': modo === 'login' }">
-              <button type="button" @click="cambiarModo('login')">
+              <button
+                type="button"
+                :aria-pressed="modo === 'login'"
+                :disabled="cargando"
+                @click="cambiarModo('login')"
+              >
                 Iniciar sesión
               </button>
             </li>
             <li :class="{ 'is-active': modo === 'registro' }">
-              <button type="button" @click="cambiarModo('registro')">
+              <button
+                type="button"
+                :aria-pressed="modo === 'registro'"
+                :disabled="cargando"
+                @click="cambiarModo('registro')"
+              >
                 Crear usuario
               </button>
             </li>
           </ul>
         </div>
 
-        <form @submit.prevent="enviarFormulario">
-          <div v-if="modo === 'registro'" class="columns is-variable is-2">
+        <form novalidate @submit.prevent="enviarFormulario">
+          <div
+            v-if="modo === 'registro'"
+            class="columns is-variable is-2 auth-modal__name-fields"
+          >
             <div class="column">
-              <div class="field">
-                <label class="label" for="auth-register-name">Nombre</label>
-                <div class="control">
-                  <input
-                    id="auth-register-name"
-                    v-model="nombre"
-                    class="input"
-                    type="text"
-                    autocomplete="given-name"
-                    required
-                  />
-                </div>
-              </div>
+              <AuthField
+                id="auth-register-name"
+                v-model="nombre"
+                label="Nombre"
+                autocomplete="given-name"
+                :error="erroresCampos.nombre"
+                :disabled="cargando"
+                @update:model-value="limpiarErrorCampo('nombre')"
+              />
             </div>
-
             <div class="column">
-              <div class="field">
-                <label class="label" for="auth-register-surname">Apellido</label>
-                <div class="control">
-                  <input
-                    id="auth-register-surname"
-                    v-model="apellido"
-                    class="input"
-                    type="text"
-                    autocomplete="family-name"
-                    required
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="field">
-            <label class="label" for="auth-login-email">Correo electrónico</label>
-            <div class="control">
-              <input
-                id="auth-login-email"
-                v-model="email"
-                class="input"
-                type="email"
-                autocomplete="username"
-                placeholder="tu@email.com"
-                required
+              <AuthField
+                id="auth-register-surname"
+                v-model="apellido"
+                label="Apellido"
+                autocomplete="family-name"
+                :error="erroresCampos.apellido"
+                :disabled="cargando"
+                @update:model-value="limpiarErrorCampo('apellido')"
               />
             </div>
           </div>
 
-          <div class="field">
-            <label class="label" for="auth-login-password">Contraseña</label>
-            <div class="control">
-              <input
-                id="auth-login-password"
-                v-model="password"
-                class="input"
-                type="password"
-                :autocomplete="modo === 'registro' ? 'new-password' : 'current-password'"
-                :minlength="modo === 'registro' ? 8 : undefined"
-                required
-              />
-            </div>
-          </div>
+          <AuthField
+            id="auth-login-email"
+            v-model="email"
+            label="Correo electrónico"
+            type="email"
+            autocomplete="username"
+            placeholder="tu@email.com"
+            :error="erroresCampos.email"
+            :disabled="cargando"
+            @update:model-value="limpiarErrorCampo('email')"
+          />
 
-          <p v-if="error" class="notification is-danger is-light" role="alert">
+          <AuthField
+            id="auth-login-password"
+            v-model="password"
+            label="Contraseña"
+            type="password"
+            :autocomplete="modo === 'registro' ? 'new-password' : 'current-password'"
+            :minlength="modo === 'registro' ? 8 : undefined"
+            :error="erroresCampos.password"
+            :disabled="cargando"
+            @update:model-value="limpiarErrorCampo('password')"
+          />
+
+          <p
+            v-if="error"
+            class="notification is-danger is-light auth-modal__server-error"
+            role="alert"
+          >
             {{ error }}
           </p>
 
           <button
-            class="button is-primary is-fullwidth"
+            class="button is-primary is-fullwidth auth-modal__submit"
+            :class="{ 'is-loading': cargando }"
             type="submit"
             :disabled="cargando"
+            :aria-busy="cargando"
           >
             {{ cargando
               ? (modo === 'login' ? 'Ingresando…' : 'Creando cuenta…')
@@ -211,50 +249,3 @@ async function enviarFormulario() {
     </div>
   </div>
 </template>
-
-<style scoped>
-.auth-modal {
-  z-index: 30;
-}
-
-.modal-card {
-  width: min(32rem, calc(100vw - 2rem));
-}
-
-.modal-card-head {
-  background: var(--color-superficie);
-}
-
-.modal-card-title {
-  color: var(--color-texto);
-  font-weight: 700;
-}
-
-.modal-card-body {
-  background: var(--color-superficie);
-}
-
-.auth-modal-intro {
-  margin-bottom: 1.25rem;
-  color: var(--color-secundario);
-}
-
-.auth-tabs {
-  margin-bottom: 1.25rem;
-}
-
-.auth-tabs button {
-  width: 100%;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-  font: inherit;
-  padding: 0.5em 1em;
-}
-
-.auth-tabs .is-active button {
-  cursor: default;
-  font-weight: 700;
-}
-</style>
