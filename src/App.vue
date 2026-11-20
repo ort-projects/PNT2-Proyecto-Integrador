@@ -1,8 +1,9 @@
 <script setup>
-import { computed, defineAsyncComponent } from 'vue'
+import { computed, defineAsyncComponent, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from './store/auth.js'
 import AuthModal from './components/AuthModal.vue'
+import { useCartStore } from './store/cart.js'
 
 const layouts = {
   MainLayout: defineAsyncComponent(() => import('./layouts/MainLayout.vue')),
@@ -12,6 +13,13 @@ const layouts = {
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+const cartStore = useCartStore()
+
+watch(
+  () => authStore.userKey,
+  (userKey) => cartStore.sincronizarSesion(userKey, authStore),
+  { immediate: true },
+)
 
 const layout = computed(() => {
   const layoutName = route.meta.layout

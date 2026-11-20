@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../store/auth.js'
 import { useCartStore } from '../store/cart.js'
@@ -13,6 +13,7 @@ const router = useRouter()
 const productos = ref([])
 const cargando = ref(false)
 const error = ref('')
+let generacionCarga = 0
 
 const productosEnCarrito = computed(() =>
   productos.value.flatMap((producto) => {
@@ -41,8 +42,11 @@ const totalCarrito = computed(() =>
 )
 
 async function cargarProductosDelCarrito() {
+  const generacion = ++generacionCarga
   if (cartStore.items.length === 0) {
     productos.value = []
+    cargando.value = false
+    error.value = ''
     return
   }
 
@@ -50,7 +54,7 @@ async function cargarProductosDelCarrito() {
   error.value = ''
 
   try {
-    productos.value = await Promise.all(
+    const cargados = await Promise.all(
       cartStore.items.map(async (item) => {
         const response = await authStore.fetchWithAuth(
           `http://localhost:3000/productos/${item.id}`,
@@ -68,17 +72,24 @@ async function cargarProductosDelCarrito() {
         }
       }),
     )
+    if (generacion === generacionCarga) productos.value = cargados
   } catch (err) {
-    error.value =
-      err instanceof Error
-        ? err.message
-        : 'No se pudieron cargar los productos del carrito.'
+    if (generacion === generacionCarga) {
+      error.value =
+        err instanceof Error
+          ? err.message
+          : 'No se pudieron cargar los productos del carrito.'
+    }
   } finally {
-    cargando.value = false
+    if (generacion === generacionCarga) cargando.value = false
   }
 }
 
-onMounted(cargarProductosDelCarrito)
+watch(
+  () => cartStore.items.map((item) => String(item.id)).join(','),
+  cargarProductosDelCarrito,
+  { immediate: true },
+)
 
 const enviandoPedido = ref(false)
 const errorPedido = ref('')
@@ -95,10 +106,16 @@ function mostrarToast(mensaje) {
 }
 
 async function enviarPedido() {
-  const items = cartStore.obtenerItems()
-
-  if (items.length === 0) {
+  if (cartStore.items.length === 0) {
     throw new Error('El carrito está vacío.')
+  }
+
+  await cartStore.guardarPendientes(authStore)
+  if (cartStore.syncError || !cartStore.ready || cartStore.saving) {
+    throw new Error(cartStore.syncError || 'Esperá a que se guarde el carrito antes de confirmar la compra.')
+  }
+  if (!Number.isInteger(cartStore.version)) {
+    throw new Error('Todavía no se pudo sincronizar el carrito con tu cuenta.')
   }
 
   const response = await authStore.fetchWithAuth(
@@ -106,7 +123,7 @@ async function enviarPedido() {
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ items }),
+      body: JSON.stringify({ carritoVersion: cartStore.version }),
     },
   )
 
@@ -129,7 +146,7 @@ async function enviarPedido() {
 // El carrito se vacía antes de navegar para que no se pueda reenviar el mismo pedido.
 // El mensaje de éxito lo muestra "Mis pedidos" a partir del state de la navegación.
 async function compraExitosa() {
-  cartStore.vaciarCarrito()
+  cartStore.vaciarCarrito({ servidorYaVacio: true })
   await router.push({ name: 'mis-pedidos', state: { pedidoRegistrado: true } })
 }
 
@@ -155,6 +172,9 @@ async function confirmarPedido() {
       errorPedido.value =
         'Iniciá sesión para confirmar la compra. Tu carrito se conserva.'
       authStore.abrirLoginModal({ mensaje: MENSAJE_LOGIN_COMPRA })
+    } else if (err?.status === 409) {
+      await cartStore.sincronizarSesion(authStore.userKey, authStore)
+      errorPedido.value = 'El carrito cambió desde otra sesión. Revisalo y confirmá de nuevo.'
     } else if (err?.status === 404) {
       mostrarToast(`${err.message} El carrito se conserva.`)
     } else {
@@ -193,13 +213,29 @@ watch(
     <div class="container">
       <h1 class="title is-2">Mi carrito</h1>
 
-      <div v-if="cartStore.items.length === 0" class="notification">
+      <div v-if="cartStore.syncError" class="notification is-danger is-light" role="alert">
+        <p>{{ cartStore.syncError }}</p>
+        <button
+          class="button mt-3"
+          type="button"
+          :disabled="cartStore.saving"
+          @click="cartStore.reintentarSincronizacion"
+        >
+          Reintentar guardado
+        </button>
+      </div>
+
+      <div v-if="cartStore.items.length === 0 && cartStore.ready" class="notification">
         <p>Tu carrito está vacío.</p>
 
         <RouterLink to="/catalog" class="button is-primary mt-4">
           Ver productos
         </RouterLink>
       </div>
+
+      <p v-else-if="cartStore.accountKey && !cartStore.ready">
+        Sincronizando el carrito de tu cuenta...
+      </p>
 
       <p v-else-if="cargando">Cargando los productos del carrito...</p>
 
@@ -242,7 +278,7 @@ watch(
                 <button
                   type="button"
                   :aria-label="`Disminuir cantidad de ${producto.title}`"
-                  :disabled="enviandoPedido || producto.cantidad <= 1"
+                  :disabled="enviandoPedido || !cartStore.ready || cartStore.saving || producto.cantidad <= 1"
                   @click="cartStore.disminuirCantidad(producto.id)"
                 >
                   −
@@ -253,7 +289,7 @@ watch(
                 <button
                   type="button"
                   :aria-label="`Aumentar cantidad de ${producto.title}`"
-                  :disabled="enviandoPedido"
+                  :disabled="enviandoPedido || !cartStore.ready || cartStore.saving"
                   @click="cartStore.aumentarCantidad(producto.id)"
                 >
                   +
@@ -270,7 +306,7 @@ watch(
               <button
                 type="button"
                 class="button is-small is-light remove-cart-item"
-                :disabled="enviandoPedido"
+                :disabled="enviandoPedido || !cartStore.ready || cartStore.saving"
                 @click="cartStore.quitarProducto(producto.id)"
               >
                 Eliminar
@@ -295,10 +331,10 @@ watch(
             <button
             type="button"
             class="button is-primary"
-            :disabled="enviandoPedido || cartStore.items.length === 0"
+              :disabled="enviandoPedido || !cartStore.ready || cartStore.saving || Boolean(cartStore.syncError) || cartStore.items.length === 0"
               @click="confirmarPedido"
->
-            {{ enviandoPedido ? 'Enviando pedido…' : 'Confirmar compra' }}
+            >
+              {{ enviandoPedido ? 'Enviando pedido…' : 'Confirmar compra' }}
             </button>
           </div>
         </div>

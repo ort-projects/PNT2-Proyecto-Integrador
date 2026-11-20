@@ -50,6 +50,11 @@ export const useAuthStore = defineStore('auth', {
     isAdmin: (state) => {
       return readTokenClaims(state.token)?.role === 'admin'
     },
+    userKey: (state) => {
+      const claims = readTokenClaims(state.token)
+      if (!state.token || (typeof claims?.exp === 'number' && claims.exp * 1000 <= Date.now())) return ''
+      return typeof claims?.sub === 'string' ? claims.sub : ''
+    },
     userDisplayName: (state) => {
       const claims = readTokenClaims(state.token)
       const name = typeof claims?.name === 'string' ? claims.name.trim() : ''
