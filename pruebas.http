@@ -1,0 +1,29 @@
+@baseUrl = http://localhost:3000
+@token = REEMPLAZAR_CON_TOKEN_DE_PRUEBA
+@productoId = 1
+
+### Consultar el carrito y obtener su version actual
+# @name carritoActual
+GET {{baseUrl}}/carrito
+Authorization: Bearer {{token}}
+
+### Agregar una unidad al carrito
+# PUT /carrito guarda el carrito completo. Para esta prueba, usar una cuenta
+# de prueba con el carrito vacio o incluir aqui todos sus items actuales.
+PUT {{baseUrl}}/carrito
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "version": {{carritoActual.response.body.$.version}},
+  "items": [
+    {
+      "productId": {{productoId}},
+      "quantity": 1
+    }
+  ]
+}
+
+### Verificar que el producto quedo en el carrito
+GET {{baseUrl}}/carrito
+Authorization: Bearer {{token}}
